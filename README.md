@@ -139,7 +139,11 @@ Fixed-date, Easter-based, and floating weekday holidays are computed algorithmic
 
 ---
 
-## Building
+## Download
+
+An Apple-signed compiled release will be available in the near future — no Xcode required. Watch this repo for updates.
+
+## Building from Source
 
 1. Clone the repo
 2. Open `QuickCal.xcodeproj` in Xcode
