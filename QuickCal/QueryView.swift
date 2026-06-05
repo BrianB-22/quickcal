@@ -8,20 +8,20 @@ struct QueryView: View {
     @State private var placeholderIndex = 0
 
     private let placeholders = [
-        "Try: time in Tokyo",
-        "Try: days until Christmas",
-        "Try: first Monday in October",
-        "Try: +15 business days from today",
-        "Try: convert 3pm EST to London time",
-        "Try: is 2028 a leap year",
-        "Try: days left in Q3",
-        "Try: how long between Jan 1 and Oct 15",
-        "Try: last Friday of November",
-        "Try: what quarter is it",
-        "Try: how old is someone born June 5 1990",
-        "Try: business days in July",
-        "Try: when does Q4 start",
-        "Try: days left in the year",
+        "Try here: time in Tokyo",
+        "Try here: days until Christmas",
+        "Try here: first Monday in October",
+        "Try here: +15 business days from today",
+        "Try here: convert 3pm EST to London time",
+        "Try here: is 2028 a leap year",
+        "Try here: days left in Q3",
+        "Try here: how long between Jan 1 and Oct 15",
+        "Try here: last Friday of November",
+        "Try here: what quarter is it",
+        "Try here: how old is someone born June 5 1990",
+        "Try here: business days in July",
+        "Try here: when does Q4 start",
+        "Try here: days left in the year",
     ]
 
     private var currentPlaceholder: String {

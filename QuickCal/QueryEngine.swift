@@ -34,7 +34,7 @@ enum QueryEngine {
         if let a = answerIsHoliday(q)          { return a }
         if let a = answerTodayDate(q)          { return a }
 
-        return "Try: \"what time in Tokyo\", \"convert 3pm EST to London time\", \"next Friday\", \"+15 business days from today\", \"days until Christmas\", \"is 2028 a leap year\", \"what quarter is it\"."
+        return "Try here: \"time in Tokyo\", \"convert 3pm EST to London time\", \"next Friday\", \"+15 business days from today\", \"days until Christmas\", \"is 2028 a leap year\", \"what quarter is it\"."
     }
 
     // MARK: - Normalization
