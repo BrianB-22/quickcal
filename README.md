@@ -16,6 +16,10 @@
   <img src="https://img.shields.io/badge/internet-not%20required-lightgrey?style=flat-square" />
 </p>
 
+<p align="center">
+  <img src="images/marketing_screenshot1.png" alt="QuickCal screenshot" width="680" />
+</p>
+
 ---
 
 ## Why QuickCal
