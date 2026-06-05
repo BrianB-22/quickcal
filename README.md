@@ -46,7 +46,7 @@ Holidays from **16 countries** displayed as colored dots directly on the calenda
 
 **Dot colors:**
 - 🟠 **Orange** — National / Federal holiday
-- 🩵 **Teal** — Regional or observance varies
+- 🟢 **Teal** — Regional or observance varies
 - ⭕ **Hollow ring** — Observed date (weekend shift to nearest weekday)
 
 Hover any dot to see the holiday name, country, and type.
