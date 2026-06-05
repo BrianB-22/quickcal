@@ -13,12 +13,13 @@
 
 ## World Clock
 
-- [ ] **Full IANA search** — already ships; consider showing continent grouping in results
+- [ ] **Empty state** — first-time prompt with inline city suggestion chips when no zones added
+- [ ] **Full IANA search** — already ships; consider continent grouping in results
 
 ## Q&A Engine
 
-- [ ] **More patterns** — "is this a leap year", "what quarter is it", "how many weeks until X", "next Friday"
-- [ ] **Smarter date parsing** — "next Friday", "third Tuesday in August", "end of month"
+- [ ] **Smarter fallback** — when query almost matches, suggest closest pattern
+- [ ] **Time conversion** — "convert 3pm EST to London time"
 
 ## System Integration
 
@@ -39,24 +40,66 @@
 
 ## Future Maintenance
 
-- [ ] **Extend lunar holiday tables to 2040** — India (Holi, Diwali, Eid ×2, Dussehra), Singapore (CNY, Vesak, Hari Raya ×2, Deepavali), Japan (equinox dates) are hardcoded through 2030. Add the next decade's dates before releasing a 2030 update. *(No urgency until ~2029)*
+- [ ] **Extend lunar holiday tables to 2040** — India (Holi, Diwali, Eid ×2, Dussehra), Singapore (CNY, Vesak, Hari Raya ×2, Deepavali), South Korea (Seollal, Chuseok, Buddha's Birthday), Japan (equinox dates) are hardcoded through 2030. Add the next decade's dates before releasing a 2030 update. *(No urgency until ~2029)*
+
+---
 
 ## Shipped ✓
 
-- [x] Menu bar popover (⌥Space global hotkey)
-- [x] Month calendar with navigation
-- [x] US federal holidays — orange/teal dots, observed date hollow ring
-- [x] International holidays — US, India, UK, Canada, Australia, France, Germany, Poland (multi-select)
-- [x] Holiday dot legend in Settings
+### Calendar
+- [x] Month calendar with navigation, Today button
 - [x] Week starts on Monday option
 - [x] ISO week numbers in left gutter
-- [x] Calendar stats panel — moon phase, season, year progress bar, day stats (updates on date click)
-- [x] World clock — local time panel with seconds
-- [x] Added timezone panels — time, city label, date, UTC offset
-- [x] Drag to reorder timezone panels
-- [x] Timezone rename + delete via ⓘ popover (shows IANA identifier read-only)
-- [x] Pin timezone to menu bar — flag + time next to icon, persists across restarts
-- [x] Add Time Zone sheet — 30 popular suggestions + full IANA search fallback
-- [x] Natural language Q&A bar — timezone lookup, business day math, days until/since, holiday lookup, and more
-- [x] Settings — 12/24h, holidays, countries, week start, week numbers, launch at login, global hotkey
-- [x] dejatechsolutions.com link + v1.0 in Settings footer
+- [x] Holiday dots — orange (national), teal (regional), hollow ring (observed weekend shift)
+- [x] Multi-country holidays — 16 countries: US, India, UK, Canada, Australia, France, Germany, Italy, Japan, Brazil, Mexico, Netherlands, Poland, Singapore, South Korea, Spain
+- [x] Holiday dot legend + accuracy note in Settings
+- [x] Default enabled countries match default clock zones (US on first launch)
+
+### Calendar Stats Panel
+- [x] Moon phase — SF Symbol icon + name, computed locally
+- [x] Season — meteorological, day within season
+- [x] Year progress bar with percentage
+- [x] Day stats strip — day #, week #, days left in year, business days left in month
+- [x] Updates to show selected date stats when a date is clicked
+
+### World Clock
+- [x] Local time panel with flag, live seconds
+- [x] Zone panels — flag, time, AM/PM, city label, date, offset (UTC or local)
+- [x] UTC/Local offset toggle in header bar
+- [x] Offset display — short format (+5:30, −4) without UTC prefix
+- [x] Drag to reorder panels
+- [x] ⓘ edit popover — rename, delete, IANA identifier shown read-only
+- [x] Pin timezone to menu bar — two separate NSStatusItems, arrow always aligned
+- [x] Pin persists across restarts; auto-unpins if zone deleted
+- [x] Add Time Zone sheet — 30 popular suggestions + full 600+ IANA search fallback
+- [x] First-launch defaults: New York, London, Paris, Singapore, Mumbai, Tokyo, Sydney
+
+### Q&A Engine
+- [x] Contraction normalization (what's, when's, it's, etc.)
+- [x] Time in place — "time in SF", "tokyo time", "what time in London"
+- [x] Relative dates — next Friday, last Monday, in 3 days, in 2 weeks, this Thursday
+- [x] Business day math — +N business days from date
+- [x] Days/weeks until, days since, days between
+- [x] Date arithmetic — today + 45 days, June 1 minus 3 weeks, add 2 months to date
+- [x] Age — how old is someone born June 5 1990
+- [x] Duration breakdown — how long between X and Y (years, months, days)
+- [x] Days in month — how many days in February 2028
+- [x] Days left in year / month / quarter / period
+- [x] Business days in month/quarter, business days between two dates
+- [x] Month anchors — what day does August start on / end on
+- [x] Nth weekday — first Monday in October, last Friday of November
+- [x] Quarter info — what quarter is it, when does Q3 start/end
+- [x] Leap year check
+- [x] Holiday lookup and holiday check
+- [x] 80+ timezone aliases
+
+### Settings & App
+- [x] 12/24h toggle in header + Settings
+- [x] UTC/Local offset toggle in header + Settings
+- [x] Show holidays toggle with per-country checkboxes
+- [x] Week starts on Monday, show week numbers
+- [x] Launch at login, global hotkey (⌥Space)
+- [x] Settings footer — version, dejatechsolutions.com, copyright
+- [x] Right-click menu bar icon → About QuickCal (with GitHub + website links), Quit
+- [x] GitHub repo: github.com/BrianB-22/quickcal
+- [x] .gitignore — excludes Xcode state, DerivedData, .DS_Store, .claude/
