@@ -29,7 +29,7 @@ struct ContentView: View {
             .frame(maxHeight: .infinity)
 
             // Bottom: Q&A
-            QueryView()
+            QueryView().environmentObject(settings)
 
         }
         .frame(width: 620, height: 560)

@@ -96,6 +96,13 @@ struct SettingsView: View {
                             detail: "Display ±Nh instead of UTC±N next to each time zone.")
                     }
                 }
+
+                Section("Q&A") {
+                    Toggle(isOn: $settings.showRotatingPlaceholder) {
+                        row(icon: "text.bubble", title: "Rotating Example Hints",
+                            detail: "Cycle through example queries in the Q&A input to help discover what it can answer.")
+                    }
+                }
             }
             .formStyle(.grouped)
 

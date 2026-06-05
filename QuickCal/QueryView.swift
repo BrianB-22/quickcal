@@ -1,16 +1,40 @@
 import SwiftUI
 
 struct QueryView: View {
+    @EnvironmentObject var settings: SettingsStore
     @State private var inputText = ""
     @State private var answer = ""
-    @State private var isAnswering = false
     @FocusState private var focused: Bool
+    @State private var placeholderIndex = 0
+
+    private let placeholders = [
+        "Try: time in Tokyo",
+        "Try: days until Christmas",
+        "Try: first Monday in October",
+        "Try: +15 business days from today",
+        "Try: convert 3pm EST to London time",
+        "Try: is 2028 a leap year",
+        "Try: days left in Q3",
+        "Try: how long between Jan 1 and Oct 15",
+        "Try: last Friday of November",
+        "Try: what quarter is it",
+        "Try: how old is someone born June 5 1990",
+        "Try: business days in July",
+        "Try: when does Q4 start",
+        "Try: days left in the year",
+    ]
+
+    private var currentPlaceholder: String {
+        settings.showRotatingPlaceholder
+            ? placeholders[placeholderIndex % placeholders.count]
+            : "Ask about time or dates…"
+    }
 
     var body: some View {
         VStack(spacing: 0) {
             Divider()
 
-            // Answer area — only shown when there's something to say
+            // Answer area
             if !answer.isEmpty {
                 HStack(alignment: .top, spacing: 8) {
                     Image(systemName: "calendar.badge.clock")
@@ -22,9 +46,7 @@ struct QueryView: View {
                         .foregroundStyle(.primary)
                         .fixedSize(horizontal: false, vertical: true)
                     Spacer()
-                    Button {
-                        answer = ""
-                    } label: {
+                    Button { answer = "" } label: {
                         Image(systemName: "xmark.circle.fill")
                             .foregroundStyle(.tertiary)
                             .font(.system(size: 13))
@@ -45,11 +67,21 @@ struct QueryView: View {
                     .foregroundStyle(.secondary)
                     .font(.system(size: 14))
 
-                TextField("Ask about time or dates…", text: $inputText)
-                    .textFieldStyle(.plain)
-                    .font(.system(size: 13))
-                    .focused($focused)
-                    .onSubmit { submit() }
+                ZStack(alignment: .leading) {
+                    // Rotating / static placeholder shown when empty and unfocused
+                    if inputText.isEmpty && !focused {
+                        Text(currentPlaceholder)
+                            .font(.system(size: 13))
+                            .foregroundStyle(.tertiary)
+                            .transition(.opacity)
+                            .id(currentPlaceholder)
+                    }
+                    TextField("", text: $inputText)
+                        .textFieldStyle(.plain)
+                        .font(.system(size: 13))
+                        .focused($focused)
+                        .onSubmit { submit() }
+                }
 
                 if !inputText.isEmpty {
                     Button { submit() } label: {
@@ -66,6 +98,17 @@ struct QueryView: View {
         }
         .animation(.easeInOut(duration: 0.18), value: answer)
         .animation(.easeInOut(duration: 0.12), value: inputText.isEmpty)
+        .onAppear { startRotation() }
+    }
+
+    private func startRotation() {
+        guard settings.showRotatingPlaceholder else { return }
+        Timer.scheduledTimer(withTimeInterval: 3.5, repeats: true) { _ in
+            guard settings.showRotatingPlaceholder else { return }
+            withAnimation(.easeInOut(duration: 0.4)) {
+                placeholderIndex += 1
+            }
+        }
     }
 
     private func submit() {

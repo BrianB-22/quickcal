@@ -45,6 +45,10 @@ final class SettingsStore: ObservableObject {
         didSet { UserDefaults.standard.set(showLocalOffset, forKey: "com.quickcal.showLocalOffset") }
     }
 
+    @Published var showRotatingPlaceholder: Bool = true {
+        didSet { UserDefaults.standard.set(showRotatingPlaceholder, forKey: "com.quickcal.rotatingPlaceholder") }
+    }
+
     @Published var enabledCountries: Set<HolidayCountry> = [.us] {
         didSet {
             let raw = enabledCountries.map { $0.rawValue }.joined(separator: ",")
@@ -77,6 +81,9 @@ final class SettingsStore: ObservableObject {
         }
         if UserDefaults.standard.object(forKey: "com.quickcal.showLocalOffset") != nil {
             showLocalOffset = UserDefaults.standard.bool(forKey: "com.quickcal.showLocalOffset")
+        }
+        if UserDefaults.standard.object(forKey: "com.quickcal.rotatingPlaceholder") != nil {
+            showRotatingPlaceholder = UserDefaults.standard.bool(forKey: "com.quickcal.rotatingPlaceholder")
         }
         if let raw = UserDefaults.standard.string(forKey: "com.quickcal.enabledCountries") {
             let parsed = raw.split(separator: ",").compactMap { HolidayCountry(rawValue: String($0)) }
