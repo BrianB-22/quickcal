@@ -18,9 +18,15 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         setupPopover()
 
         hotkeyManager.onActivate = { [weak self] in self?.togglePopoverFromHotkey() }
-        applyGlobalHotkey(settings.globalHotkeyEnabled)
-        settings.$globalHotkeyEnabled
-            .sink { [weak self] in self?.applyGlobalHotkey($0) }
+        applyGlobalHotkey()
+        settings.$hotkeyMode
+            .sink { [weak self] _ in self?.applyGlobalHotkey() }
+            .store(in: &cancellables)
+        settings.$customHotkeyKeyCode
+            .sink { [weak self] _ in self?.applyGlobalHotkey() }
+            .store(in: &cancellables)
+        settings.$customHotkeyModifiers
+            .sink { [weak self] _ in self?.applyGlobalHotkey() }
             .store(in: &cancellables)
 
         // Use the value passed by the sink — @Published fires willSet so
@@ -99,12 +105,20 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
     // MARK: - Hotkey
 
-    private func applyGlobalHotkey(_ enabled: Bool) {
-        if enabled {
+    private func applyGlobalHotkey() {
+        switch settings.hotkeyMode {
+        case .none:
+            hotkeyManager.unregister()
+        case .optionSpace:
             hotkeyManager.register(keyCode: UInt32(kVK_Space),
                                    modifiers: UInt32(optionKey), id: 1)
-        } else {
-            hotkeyManager.unregister()
+        case .custom:
+            if settings.customHotkeyKeyCode != 0 && settings.customHotkeyModifiers != 0 {
+                hotkeyManager.register(keyCode: settings.customHotkeyKeyCode,
+                                       modifiers: settings.customHotkeyModifiers, id: 1)
+            } else {
+                hotkeyManager.unregister()
+            }
         }
     }
 

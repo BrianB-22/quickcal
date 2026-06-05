@@ -2,6 +2,12 @@ import Foundation
 import SwiftUI
 import ServiceManagement
 
+enum HotkeyMode: String {
+    case none
+    case optionSpace
+    case custom
+}
+
 final class SettingsStore: ObservableObject {
     @Published var use24Hour: Bool = false {
         didSet { UserDefaults.standard.set(use24Hour, forKey: "com.quickcal.use24Hour") }
@@ -15,8 +21,16 @@ final class SettingsStore: ObservableObject {
         didSet { applyLaunchAtLogin() }
     }
 
-    @Published var globalHotkeyEnabled: Bool = true {
-        didSet { UserDefaults.standard.set(globalHotkeyEnabled, forKey: "com.quickcal.globalHotkey") }
+    @Published var hotkeyMode: HotkeyMode = .optionSpace {
+        didSet { UserDefaults.standard.set(hotkeyMode.rawValue, forKey: "com.quickcal.hotkeyMode") }
+    }
+
+    @Published var customHotkeyKeyCode: UInt32 = 0 {
+        didSet { UserDefaults.standard.set(Int(customHotkeyKeyCode), forKey: "com.quickcal.customHotkeyKeyCode") }
+    }
+
+    @Published var customHotkeyModifiers: UInt32 = 0 {
+        didSet { UserDefaults.standard.set(Int(customHotkeyModifiers), forKey: "com.quickcal.customHotkeyModifiers") }
     }
 
     @Published var weekStartsOnMonday: Bool = false {
@@ -45,8 +59,15 @@ final class SettingsStore: ObservableObject {
         if UserDefaults.standard.object(forKey: "com.quickcal.showHolidays") != nil {
             showHolidays = UserDefaults.standard.bool(forKey: "com.quickcal.showHolidays")
         }
-        if UserDefaults.standard.object(forKey: "com.quickcal.globalHotkey") != nil {
-            globalHotkeyEnabled = UserDefaults.standard.bool(forKey: "com.quickcal.globalHotkey")
+        if let raw = UserDefaults.standard.string(forKey: "com.quickcal.hotkeyMode"),
+           let mode = HotkeyMode(rawValue: raw) {
+            hotkeyMode = mode
+        } else if UserDefaults.standard.object(forKey: "com.quickcal.globalHotkey") != nil {
+            hotkeyMode = UserDefaults.standard.bool(forKey: "com.quickcal.globalHotkey") ? .optionSpace : .none
+        }
+        if UserDefaults.standard.object(forKey: "com.quickcal.customHotkeyKeyCode") != nil {
+            customHotkeyKeyCode = UInt32(UserDefaults.standard.integer(forKey: "com.quickcal.customHotkeyKeyCode"))
+            customHotkeyModifiers = UInt32(UserDefaults.standard.integer(forKey: "com.quickcal.customHotkeyModifiers"))
         }
         if UserDefaults.standard.object(forKey: "com.quickcal.weekStartsOnMonday") != nil {
             weekStartsOnMonday = UserDefaults.standard.bool(forKey: "com.quickcal.weekStartsOnMonday")

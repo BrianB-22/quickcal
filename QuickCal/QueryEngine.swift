@@ -8,6 +8,7 @@ enum QueryEngine {
         let q = normalize(input)
         guard !q.isEmpty else { return "" }
 
+        if let a = answerTimeConversion(q)        { return a }
         if let a = answerTimeInPlace(q)          { return a }
         if let a = answerCurrentLocalTime(q)   { return a }
         if let a = answerDayOfWeek(q)          { return a }
@@ -33,7 +34,7 @@ enum QueryEngine {
         if let a = answerIsHoliday(q)          { return a }
         if let a = answerTodayDate(q)          { return a }
 
-        return "Try: \"what time in Tokyo\", \"next Friday\", \"+15 business days from today\", \"days until Christmas\", \"is 2028 a leap year\", \"what quarter is it\"."
+        return "Try: \"what time in Tokyo\", \"convert 3pm EST to London time\", \"next Friday\", \"+15 business days from today\", \"days until Christmas\", \"is 2028 a leap year\", \"what quarter is it\"."
     }
 
     // MARK: - Normalization
@@ -54,6 +55,48 @@ enum QueryEngine {
     }
 
     // MARK: - Handlers
+
+    private static func answerTimeConversion(_ q: String) -> String? {
+        // "convert 3pm EST to London time", "what is 9am Tokyo in New York", "3:30pm Paris to Sydney"
+        let pattern = #"(?:convert\s+|what\s+is\s+)?(\d{1,2}(?::\d{2})?\s*(?:am|pm))\s+(.+?)\s+(?:to|in)\s+(.+?)(?:\s+time)?$"#
+        guard let re = try? NSRegularExpression(pattern: pattern),
+              let match = re.firstMatch(in: q, range: NSRange(q.startIndex..., in: q)) else { return nil }
+        func g(_ i: Int) -> String {
+            guard let r = Range(match.range(at: i), in: q) else { return "" }
+            return String(q[r]).trimmingCharacters(in: .whitespaces)
+        }
+        let timeStr = g(1); let fromPlace = g(2); let toPlace = g(3)
+        guard let fromTZ = resolveTimezone(from: fromPlace),
+              let toTZ   = resolveTimezone(from: toPlace),
+              let inputDate = parseTimeOfDay(timeStr, in: fromTZ) else { return nil }
+        let fromName = fromTZ.localizedName(for: .standard, locale: .current) ?? fromPlace.capitalized
+        let toName   = toTZ.localizedName(for: .standard,   locale: .current) ?? toPlace.capitalized
+        return "\(formatTime(inputDate, in: fromTZ)) \(fromName) = \(formatTime(inputDate, in: toTZ)) \(toName)."
+    }
+
+    private static func parseTimeOfDay(_ timeStr: String, in tz: TimeZone) -> Date? {
+        let t = timeStr.lowercased().replacingOccurrences(of: " ", with: "")
+        let isPM = t.hasSuffix("pm"); let isAM = t.hasSuffix("am")
+        let digits = t.replacingOccurrences(of: "am", with: "").replacingOccurrences(of: "pm", with: "")
+        var hour: Int; var minute = 0
+        if digits.contains(":") {
+            let parts = digits.split(separator: ":").map(String.init)
+            guard parts.count == 2, let h = Int(parts[0]), let m = Int(parts[1]) else { return nil }
+            hour = h; minute = m
+        } else {
+            guard let h = Int(digits) else { return nil }
+            hour = h
+        }
+        if isPM && hour != 12 { hour += 12 }
+        if isAM && hour == 12 { hour = 0 }
+        guard hour >= 0 && hour <= 23 && minute >= 0 && minute <= 59 else { return nil }
+        let cal = Calendar.current
+        var comps = DateComponents()
+        comps.timeZone = tz
+        comps.year = cal.component(.year, from: Date()); comps.month = cal.component(.month, from: Date())
+        comps.day  = cal.component(.day,  from: Date()); comps.hour = hour; comps.minute = minute; comps.second = 0
+        return cal.date(from: comps)
+    }
 
     private static func answerCurrentLocalTime(_ q: String) -> String? {
         let triggers = ["what time is it", "what is the time", "what time is it now",

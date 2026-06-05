@@ -5,6 +5,7 @@ struct CalendarView: View {
     @Binding var displayedMonth: Date
     @Binding var selectedDate: Date?
     @State private var hoveredHoliday: (label: String, color: Color)? = nil
+    @FocusState private var isFocused: Bool
 
     var body: some View {
         VStack(spacing: 0) {
@@ -19,6 +20,17 @@ struct CalendarView: View {
         }
         .padding(.horizontal, 12)
         .padding(.bottom, 4)
+        .focusable()
+        .focusEffectDisabled()
+        .focused($isFocused)
+        .onAppear { isFocused = true }
+        .onKeyPress(.leftArrow)  { shiftMonth(-1); return .handled }
+        .onKeyPress(.rightArrow) { shiftMonth(1);  return .handled }
+        .onKeyPress(.space) {
+            displayedMonth = Calendar.current.startOfMonth(for: Date())
+            selectedDate   = Calendar.current.startOfDay(for: Date())
+            return .handled
+        }
     }
 
     // MARK: - Month header
