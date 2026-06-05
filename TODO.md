@@ -34,6 +34,10 @@
 
 ---
 
+## Future Polish
+
+- [ ] **Light mode text contrast** — secondary and tertiary text (city labels, dates, stats strip, offset labels) may be too light in light mode; review and darken where needed for readability
+
 ## Before Release
 
 - [ ] **App icon** — 1024×1024 PNG master + all required sizes in AppIcon.appiconset; needs to look good at 16pt (menu bar) and 512pt (App Store)
