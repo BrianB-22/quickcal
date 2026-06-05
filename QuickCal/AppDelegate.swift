@@ -148,6 +148,18 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         statusItem.menu = nil
     }
 
-    @objc private func showAbout() { NSApp.orderFrontStandardAboutPanel(nil) }
+    @objc private func showAbout() {
+        let credits = NSMutableAttributedString(string: "dejatechsolutions.com\n", attributes: [
+            .link: URL(string: "https://dejatechsolutions.com")!,
+            .font: NSFont.systemFont(ofSize: 11)
+        ])
+        credits.append(NSAttributedString(string: "github.com/BrianB-22/quickcal", attributes: [
+            .link: URL(string: "https://github.com/BrianB-22/quickcal")!,
+            .font: NSFont.systemFont(ofSize: 11)
+        ]))
+        NSApp.orderFrontStandardAboutPanel(options: [
+            .credits: credits
+        ])
+    }
     @objc private func quitApp()   { NSApp.terminate(nil) }
 }
