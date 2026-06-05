@@ -141,7 +141,9 @@ Fixed-date, Easter-based, and floating weekday holidays are computed algorithmic
 
 ## Download
 
-An Apple-signed compiled release will be available in the near future — no Xcode required. Watch this repo for updates.
+An Apple-signed release will be available in the near future. In the meantime, an unsigned test build is available in the [`Builds`](Builds/) folder for those who want to try it early.
+
+> **Note:** Because this build is not yet signed, macOS will show a security warning when you first open it. To run it, right-click the app and choose **Open**, then confirm in the dialog. You only need to do this once. This is a standard macOS requirement for unsigned apps and will no longer be necessary once the signed release is available.
 
 ## Building from Source
 
