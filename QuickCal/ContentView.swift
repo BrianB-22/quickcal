@@ -78,6 +78,16 @@ struct ContentView: View {
             .controlSize(.small)
             .help("Toggle 12/24-hour time")
 
+            // UTC / local offset toggle
+            Toggle(isOn: $settings.showLocalOffset) {
+                Text(settings.showLocalOffset ? "Local" : "UTC")
+                    .font(.system(size: 11, weight: .medium))
+                    .foregroundStyle(.secondary)
+            }
+            .toggleStyle(.button)
+            .controlSize(.small)
+            .help("Toggle UTC offset vs offset from local time")
+
             Button { showSettings = true } label: {
                 Image(systemName: "gear")
                     .font(.system(size: 14))

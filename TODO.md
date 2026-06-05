@@ -33,6 +33,10 @@
 
 ---
 
+## Before Release
+
+- [ ] **App icon** — 1024×1024 PNG master + all required sizes in AppIcon.appiconset; needs to look good at 16pt (menu bar) and 512pt (App Store)
+
 ## Future Maintenance
 
 - [ ] **Extend lunar holiday tables to 2040** — India (Holi, Diwali, Eid ×2, Dussehra), Singapore (CNY, Vesak, Hari Raya ×2, Deepavali), Japan (equinox dates) are hardcoded through 2030. Add the next decade's dates before releasing a 2030 update. *(No urgency until ~2029)*

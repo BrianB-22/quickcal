@@ -27,11 +27,11 @@ final class SettingsStore: ObservableObject {
         didSet { UserDefaults.standard.set(showWeekNumbers, forKey: "com.quickcal.showWeekNumbers") }
     }
 
-    @Published var showLocalOffset: Bool = false {
+    @Published var showLocalOffset: Bool = true {
         didSet { UserDefaults.standard.set(showLocalOffset, forKey: "com.quickcal.showLocalOffset") }
     }
 
-    @Published var enabledCountries: Set<HolidayCountry> = [.us, .uk, .france, .singapore, .india, .japan, .australia] {
+    @Published var enabledCountries: Set<HolidayCountry> = [.us] {
         didSet {
             let raw = enabledCountries.map { $0.rawValue }.joined(separator: ",")
             UserDefaults.standard.set(raw, forKey: "com.quickcal.enabledCountries")

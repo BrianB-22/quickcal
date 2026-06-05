@@ -131,7 +131,7 @@ private struct ZonePanel: View {
         HStack(alignment: .center, spacing: 0) {
             // Time + label
             VStack(alignment: .leading, spacing: 2) {
-                // Time row — flag + time + AM/PM only, full width available
+                // Row 1: flag + time + AM/PM + offset
                 HStack(alignment: .firstTextBaseline, spacing: 4) {
                     if let flag {
                         Text(flag)
@@ -148,17 +148,21 @@ private struct ZonePanel: View {
                             .lineLimit(1)
                             .alignmentGuide(.firstTextBaseline) { d in d[.bottom] - 2 }
                     }
+                    Spacer(minLength: 4)
+                    Text(offsetLabel)
+                        .font(.system(size: 11))
+                        .foregroundStyle(.tertiary)
+                        .lineLimit(1)
+                        .fixedSize()
                 }
-                // Label row — city, date, offset
-                HStack(spacing: 4) {
+                // Row 2: city name + date — full width, city truncates if long
+                HStack(spacing: 6) {
                     Text(zone.label)
                         .font(.system(size: 13))
                         .foregroundStyle(.secondary)
+                        .lineLimit(1)
+                        .truncationMode(.tail)
                     Text(dateString)
-                        .font(.system(size: 11))
-                        .foregroundStyle(.tertiary)
-                    Spacer(minLength: 0)
-                    Text(offsetLabel)
                         .font(.system(size: 11))
                         .foregroundStyle(.tertiary)
                         .lineLimit(1)
@@ -236,8 +240,8 @@ private struct ZonePanel: View {
         } else {
             let s = zone.timeZone.secondsFromGMT()
             let h = s / 3600; let m = abs(s % 3600) / 60
-            let sign = h >= 0 ? "+" : ""
-            return m == 0 ? "UTC\(sign)\(h)" : "UTC\(sign)\(h):\(String(format: "%02d", m))"
+            let sign = h >= 0 ? "+" : "−"
+            return m == 0 ? "\(sign)\(abs(h))" : "\(sign)\(abs(h)):\(String(format: "%02d", m))"
         }
     }
 }
