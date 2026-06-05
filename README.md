@@ -62,15 +62,56 @@ Built for teams spread across time zones:
 ### Natural Language Q&A
 Type a plain-English question in the bar at the bottom. Everything is answered locally — no AI API, no network call.
 
-**Examples:**
-- `what time is it in Mumbai`
+**Time & timezones:**
+- `what time in Tokyo` / `london time` / `time in SF`
+- `what's the time in Mumbai`
+
+**Day & date:**
+- `what day is next Friday`
 - `what day of the week is June 1 2027`
-- `+20 business days from today`
+- `what day does August start on`
+- `last Friday of November`
+- `first Monday in October 2027`
+
+**Countdowns & elapsed:**
 - `how many days until Christmas`
-- `how many days between July 4th and Thanksgiving`
+- `days until Thanksgiving`
+- `how many weeks until New Year`
+- `how many days since Labor Day`
+
+**Business days:**
+- `+20 business days from today`
+- `15 business days from March 5`
+- `business days between March 1 and April 15`
+- `how many business days in July`
+- `business days left in month`
+
+**Date math:**
+- `90 days from today`
+- `today + 45 days`
+- `June 1 minus 3 weeks`
+- `add 2 months to March 15`
+- `how long between Jan 1 and Oct 15`
+
+**Days in periods:**
+- `how many days in February 2028`
+- `days left in the year`
+- `days left in Q3`
+- `days left in June`
+
+**Quarter & year:**
+- `what quarter is it`
+- `when does Q4 start`
+- `when does Q2 end`
+- `is 2028 a leap year`
+
+**Holidays:**
+- `when is Thanksgiving 2027`
 - `when is Bastille Day 2028`
-- `what week of the year is today`
 - `is November 11 a holiday`
+
+**Age:**
+- `how old is someone born June 5 1990`
 
 ### Settings
 - **Show Holidays** — checkboxes for all 16 countries with a dot-color legend and accuracy note
