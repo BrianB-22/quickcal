@@ -34,6 +34,10 @@ struct ContentView: View {
         }
         .frame(width: 620, height: 560)
         .background(Color(NSColor.windowBackgroundColor))
+        .onReceive(NotificationCenter.default.publisher(for: Notification.Name("com.quickcal.didOpen"))) { _ in
+            displayedMonth = Calendar.current.startOfMonth(for: Date())
+            selectedDate   = nil
+        }
         .sheet(isPresented: $showSettings) {
             SettingsView().environmentObject(settings)
         }

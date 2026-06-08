@@ -149,6 +149,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         }
         popover.show(relativeTo: button.bounds, of: button, preferredEdge: .minY)
         popover.contentViewController?.view.window?.makeKey()
+        NotificationCenter.default.post(name: .quickCalDidOpen, object: nil)
     }
 
     private func showContextMenu() {
@@ -176,4 +177,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         ])
     }
     @objc private func quitApp()   { NSApp.terminate(nil) }
+}
+
+extension Notification.Name {
+    static let quickCalDidOpen = Notification.Name("com.quickcal.didOpen")
 }
