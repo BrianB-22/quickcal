@@ -96,31 +96,31 @@ struct CalendarView: View {
                             .padding(.trailing, 4)
                     }
                     ForEach(Array(row.days.enumerated()), id: \.offset) { _, date in
-                        if let date {
-                            let dayHolidays = settings.showHolidays
-                                ? HolidayData.holidays(for: date, countries: settings.enabledCountries)
-                                : []
-                            DayCell(
-                                date: date,
-                                isCurrentMonth: isSameMonth(date),
-                                isToday: Calendar.current.isDateInToday(date),
-                                isSelected: selectedDate.map { Calendar.current.isDate($0, inSameDayAs: date) } ?? false,
-                                dotColor: dotColor(for: dayHolidays),
-                                isObserved: dayHolidays.contains(where: { $0.isObserved }),
-                                onHover: { hovering in
-                                    if hovering, let label = hoverLabel(for: dayHolidays) {
-                                        let color = dotColor(for: dayHolidays) ?? .orange
-                                        hoveredHoliday = (label, color)
-                                    } else {
-                                        hoveredHoliday = nil
-                                    }
+                        let inMonth = isSameMonth(date)
+                        let dayHolidays = settings.showHolidays && inMonth
+                            ? HolidayData.holidays(for: date, countries: settings.enabledCountries)
+                            : []
+                        DayCell(
+                            date: date,
+                            isCurrentMonth: inMonth,
+                            isToday: Calendar.current.isDateInToday(date),
+                            isSelected: selectedDate.map { Calendar.current.isDate($0, inSameDayAs: date) } ?? false,
+                            dotColor: dotColor(for: dayHolidays),
+                            isObserved: dayHolidays.contains(where: { $0.isObserved }),
+                            onHover: { hovering in
+                                if hovering, let label = hoverLabel(for: dayHolidays) {
+                                    let color = dotColor(for: dayHolidays) ?? .orange
+                                    hoveredHoliday = (label, color)
+                                } else {
+                                    hoveredHoliday = nil
                                 }
-                            )
-                            .onTapGesture { selectedDate = date }
-                        } else {
-                            Color.clear
-                                .frame(maxWidth: .infinity)
-                                .frame(height: 32)
+                            }
+                        )
+                        .onTapGesture {
+                            selectedDate = date
+                            if !inMonth {
+                                displayedMonth = Calendar.current.startOfMonth(for: date)
+                            }
                         }
                     }
                 }
@@ -183,7 +183,7 @@ struct CalendarView: View {
 
     private struct WeekRow {
         let weekNumber: Int
-        let days: [Date?]
+        let days: [Date]
     }
 
     private var weekRows: [WeekRow] {
@@ -192,21 +192,32 @@ struct CalendarView: View {
 
         guard let monthInterval = cal.dateInterval(of: .month, for: displayedMonth) else { return [] }
         let firstDay = monthInterval.start
-        let lastDay = cal.date(byAdding: .day, value: -1, to: monthInterval.end)!
+        let lastDay  = cal.date(byAdding: .day, value: -1, to: monthInterval.end)!
         let daysInMonth = cal.component(.day, from: lastDay)
 
-        let offset = firstDayOffset(cal: cal, firstDay: firstDay)
+        let offset    = firstDayOffset(cal: cal, firstDay: firstDay)
         let totalRows = Int(ceil(Double(offset + daysInMonth) / 7.0))
 
-        var flat: [Date?] = Array(repeating: nil, count: offset)
-        for i in 0 ..< daysInMonth {
-            flat.append(cal.date(byAdding: .day, value: i, to: firstDay))
+        var flat: [Date] = []
+
+        // Leading dates from previous month
+        for i in 0 ..< offset {
+            flat.append(cal.date(byAdding: .day, value: i - offset, to: firstDay)!)
         }
-        while flat.count < totalRows * 7 { flat.append(nil) }
+        // Current month
+        for i in 0 ..< daysInMonth {
+            flat.append(cal.date(byAdding: .day, value: i, to: firstDay)!)
+        }
+        // Trailing dates from next month
+        var trailing = 0
+        while flat.count < totalRows * 7 {
+            flat.append(cal.date(byAdding: .day, value: trailing, to: monthInterval.end)!)
+            trailing += 1
+        }
 
         return (0 ..< totalRows).map { row in
-            let slice = Array(flat[(row * 7) ..< (row * 7 + 7)])
-            let anchor = slice.compactMap { $0 }.first ?? firstDay
+            let slice  = Array(flat[(row * 7) ..< (row * 7 + 7)])
+            let anchor = slice.first ?? firstDay
             let weekNum = cal.component(.weekOfYear, from: anchor)
             return WeekRow(weekNumber: weekNum, days: slice)
         }

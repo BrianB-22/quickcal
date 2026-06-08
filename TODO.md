@@ -2,6 +2,7 @@
 
 ## Calendar
 
+- [ ] **Fill calendar grid edges** — show trailing days from the previous month before the 1st, and leading days from the next month after the last day, so the grid is always full with no blank cells. Tapping those dates should navigate to that month.
 - [ ] **Date range selection** — shift-click to select a range; show day count in the stats area
 - [ ] **Mini month preview** — small prev/next month thumbnails on hover of the nav arrows
 
