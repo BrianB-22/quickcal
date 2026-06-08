@@ -174,7 +174,7 @@ Input normalizes contractions (`what's` → `what is`) before parsing.
 | 24-Hour Time | off | Clock |
 | Show Offset from Local Time | on | Clock |
 
-Footer: QuickCal v1.0 · dejatechsolutions.com · © Dejatech Solutions
+Footer: QuickCal v1.1 · dejatechsolutions.com · © Dejatech Solutions
 
 ---
 

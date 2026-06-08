@@ -110,7 +110,7 @@ struct SettingsView: View {
 
             VStack(spacing: 3) {
                 HStack(spacing: 4) {
-                    Text("QuickCal v1.0")
+                    Text("QuickCal v1.1")
                         .font(.system(size: 11))
                         .foregroundStyle(.tertiary)
                     Text("·")
