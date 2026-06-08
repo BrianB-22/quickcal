@@ -182,6 +182,8 @@ struct CalendarStatsView: View {
             HStack(spacing: 0) {
                 chip("Day \(dayOfYear)")
                 sep
+                chip("Mo \(cal.component(.month, from: date))")
+                sep
                 chip("Wk \(weekNum)")
                 sep
                 chip("\(daysLeft) days left in \(year)")
