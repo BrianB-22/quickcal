@@ -3,13 +3,17 @@ import Foundation
 // MARK: - Types
 
 enum HolidayKind {
-    case national   // Federally mandated, universally observed — orange dot
-    case regional   // State/cultural/observance varies — teal dot
+    case national      // Federally mandated, universally observed — red dot
+    case regional      // State/cultural/observance varies — teal dot
+    case usObservance  // US cultural observances (Valentine's Day, etc.) — yellow dot
+    case usNovelty     // Fun/internet holidays (Star Wars Day, Pi Day, etc.) — purple dot
 
     var label: String {
         switch self {
-        case .national: return "Federal Holiday"
-        case .regional: return "Observance Varies"
+        case .national:     return "Federal Holiday"
+        case .regional:     return "Observance Varies"
+        case .usObservance: return "US Observance"
+        case .usNovelty:    return "US Novelty Day"
         }
     }
 }
@@ -108,6 +112,12 @@ enum HolidayData {
         }
     }
 
+    static func observances(for date: Date) -> [Holiday] {
+        let cal = Calendar(identifier: .gregorian)
+        let year = cal.component(.year, from: date)
+        return usObservances(year).filter { cal.isDate($0.date, inSameDayAs: date) }
+    }
+
     // US-only helpers kept for QueryEngine
     static func holidayName(for date: Date) -> String? {
         holidays(for: date, countries: [.us]).first?.name
@@ -125,6 +135,32 @@ enum HolidayData {
         let lower = name.lowercased()
         return holidays(for: year, country: .us)
             .first { $0.name.lowercased().contains(lower) }?.date
+    }
+
+    static func noveltyDays(for date: Date) -> [Holiday] {
+        let cal = Calendar(identifier: .gregorian)
+        let year = cal.component(.year, from: date)
+        return usNoveltyDays(year).filter { cal.isDate($0.date, inSameDayAs: date) }
+    }
+
+    static func date(forNoveltyDayNamed name: String, year: Int) -> Date? {
+        let lower = name.lowercased()
+        let stripped = lower.replacingOccurrences(of: "'", with: "").replacingOccurrences(of: ".", with: "")
+        return usNoveltyDays(year).first {
+            let hn = $0.name.lowercased()
+            let hs = hn.replacingOccurrences(of: "'", with: "").replacingOccurrences(of: ".", with: "")
+            return hn.contains(lower) || hs.contains(stripped)
+        }?.date
+    }
+
+    static func date(forObservanceNamed name: String, year: Int) -> Date? {
+        let lower = name.lowercased()
+        let stripped = lower.replacingOccurrences(of: "'", with: "").replacingOccurrences(of: ".", with: "")
+        return usObservances(year).first {
+            let hn = $0.name.lowercased()
+            let hs = hn.replacingOccurrences(of: "'", with: "").replacingOccurrences(of: ".", with: "")
+            return hn.contains(lower) || hs.contains(stripped)
+        }?.date
     }
 
     // MARK: - Per-country
@@ -224,6 +260,112 @@ enum HolidayData {
             h("Thanksgiving",     date: nthWeekday(5, nth: 4, month: 11, year: year),                 kind: .national, country: .us),
             h("Christmas Day",    date: fixed(year: year, month: 12, day: 25),                        kind: .national, country: .us, shift: true),
         ]
+    }
+
+    // MARK: - United States Observances
+
+    private static func usObservances(_ year: Int) -> [Holiday] {
+        // Election Day: 1st Tuesday after the 1st Monday in November
+        let firstMonday = nthWeekday(2, nth: 1, month: 11, year: year)
+        let electionDay = cal().date(byAdding: .day, value: 1, to: firstMonday)!
+        return [
+            h("Groundhog Day",     date: fixed(year: year, month: 2,  day: 2),                    kind: .usObservance, country: .us),
+            h("Valentine's Day",   date: fixed(year: year, month: 2,  day: 14),                   kind: .usObservance, country: .us),
+            h("St. Patrick's Day", date: fixed(year: year, month: 3,  day: 17),                   kind: .usObservance, country: .us),
+            h("Easter Sunday",     date: easter(year: year),                                       kind: .usObservance, country: .us),
+            h("Earth Day",         date: fixed(year: year, month: 4,  day: 22),                   kind: .usObservance, country: .us),
+            h("Cinco de Mayo",     date: fixed(year: year, month: 5,  day: 5),                    kind: .usObservance, country: .us),
+            h("Mother's Day",      date: nthWeekday(1, nth: 2, month: 5,  year: year),            kind: .usObservance, country: .us),
+            h("Flag Day",          date: fixed(year: year, month: 6,  day: 14),                   kind: .usObservance, country: .us),
+            h("Father's Day",      date: nthWeekday(1, nth: 3, month: 6,  year: year),            kind: .usObservance, country: .us),
+            h("Halloween",         date: fixed(year: year, month: 10, day: 31),                   kind: .usObservance, country: .us),
+            h("Election Day",      date: electionDay,                                              kind: .usObservance, country: .us),
+            h("Christmas Eve",     date: fixed(year: year, month: 12, day: 24),                   kind: .usObservance, country: .us),
+            h("New Year's Eve",    date: fixed(year: year, month: 12, day: 31),                   kind: .usObservance, country: .us),
+        ]
+    }
+
+    // MARK: - United States Novelty Days
+
+    private static func usNoveltyDays(_ year: Int) -> [Holiday] {
+        var result: [Holiday] = [
+            // January
+            h("National Nothing Day",              date: fixed(year: year, month: 1,  day: 16), kind: .usNovelty, country: .us),
+            h("National Compliment Day",           date: fixed(year: year, month: 1,  day: 24), kind: .usNovelty, country: .us),
+            h("National Opposite Day",             date: fixed(year: year, month: 1,  day: 25), kind: .usNovelty, country: .us),
+            // February
+            h("National Pizza Day",                date: fixed(year: year, month: 2,  day: 9),  kind: .usNovelty, country: .us),
+            h("Random Acts of Kindness Day",       date: fixed(year: year, month: 2,  day: 17), kind: .usNovelty, country: .us),
+            // March
+            h("National Peanut Butter Lover's Day",date: fixed(year: year, month: 3,  day: 1),  kind: .usNovelty, country: .us),
+            h("National Doctors' Day",             date: fixed(year: year, month: 3,  day: 30), kind: .usNovelty, country: .us),
+            h("Pi Day",                            date: fixed(year: year, month: 3,  day: 14), kind: .usNovelty, country: .us),
+            h("International Day of Happiness",    date: fixed(year: year, month: 3,  day: 20), kind: .usNovelty, country: .us),
+            h("Make Up Your Own Holiday Day",      date: fixed(year: year, month: 3,  day: 26), kind: .usNovelty, country: .us),
+            // April
+            h("April Fools' Day",                  date: fixed(year: year, month: 4,  day: 1),  kind: .usNovelty, country: .us),
+            h("National Tartan Day",               date: fixed(year: year, month: 4,  day: 6),  kind: .usNovelty, country: .us),
+            h("Wear Your Pajamas to Work Day",     date: fixed(year: year, month: 4,  day: 16), kind: .usNovelty, country: .us),
+            h("Earth Day",                         date: fixed(year: year, month: 4,  day: 22), kind: .usNovelty, country: .us),
+            // May
+            h("National Nurses Day",               date: fixed(year: year, month: 5,  day: 6),  kind: .usNovelty, country: .us),
+            h("Star Wars Day",                     date: fixed(year: year, month: 5,  day: 4),  kind: .usNovelty, country: .us),
+            h("Pack Rat Day",                      date: fixed(year: year, month: 5,  day: 17), kind: .usNovelty, country: .us),
+            h("Talk Like Yoda Day",                date: fixed(year: year, month: 5,  day: 21), kind: .usNovelty, country: .us),
+            // June
+            h("Hug Your Cat Day",                  date: fixed(year: year, month: 6,  day: 4),  kind: .usNovelty, country: .us),
+            h("Best Friends Day",                  date: fixed(year: year, month: 6,  day: 8),  kind: .usNovelty, country: .us),
+            h("International Picnic Day",          date: fixed(year: year, month: 6,  day: 18), kind: .usNovelty, country: .us),
+            h("Hike With a Geek Day",              date: fixed(year: year, month: 6,  day: 20), kind: .usNovelty, country: .us),
+            // July
+            h("World Chocolate Day",               date: fixed(year: year, month: 7,  day: 7),  kind: .usNovelty, country: .us),
+            h("Embrace Your Geekness Day",         date: fixed(year: year, month: 7,  day: 13), kind: .usNovelty, country: .us),
+            h("Be a Dork Day",                     date: fixed(year: year, month: 7,  day: 15), kind: .usNovelty, country: .us),
+            h("World Emoji Day",                   date: fixed(year: year, month: 7,  day: 17), kind: .usNovelty, country: .us),
+            // August
+            h("International Cat Day",             date: fixed(year: year, month: 8,  day: 8),  kind: .usNovelty, country: .us),
+            h("Left-Handers Day",                  date: fixed(year: year, month: 8,  day: 13), kind: .usNovelty, country: .us),
+            h("National Dog Day",                  date: fixed(year: year, month: 8,  day: 26), kind: .usNovelty, country: .us),
+            // September
+            h("Talk Like a Pirate Day",            date: fixed(year: year, month: 9,  day: 19), kind: .usNovelty, country: .us),
+            h("Hobbit Day",                        date: fixed(year: year, month: 9,  day: 22), kind: .usNovelty, country: .us),
+            // October
+            h("International Coffee Day",          date: fixed(year: year, month: 10, day: 1),  kind: .usNovelty, country: .us),
+            h("World Animal Day",                  date: fixed(year: year, month: 10, day: 4),  kind: .usNovelty, country: .us),
+            h("Boss's Day",                        date: fixed(year: year, month: 10, day: 16), kind: .usNovelty, country: .us),
+            h("Back to the Future Day",            date: fixed(year: year, month: 10, day: 21), kind: .usNovelty, country: .us),
+            h("Checklist Day",                     date: fixed(year: year, month: 10, day: 30), kind: .usNovelty, country: .us),
+            h("Halloween",                         date: fixed(year: year, month: 10, day: 31), kind: .usNovelty, country: .us),
+            // November
+            h("Sandwich Day",                      date: fixed(year: year, month: 11, day: 3),  kind: .usNovelty, country: .us),
+            h("World Kindness Day",                date: fixed(year: year, month: 11, day: 13), kind: .usNovelty, country: .us),
+            h("Take a Hike Day",                   date: fixed(year: year, month: 11, day: 17), kind: .usNovelty, country: .us),
+            h("International Men's Day",           date: fixed(year: year, month: 11, day: 19), kind: .usNovelty, country: .us),
+            h("Shopping Reminder Day",             date: fixed(year: year, month: 11, day: 25), kind: .usNovelty, country: .us),
+            // December
+            h("Wear Brown Shoes Day",              date: fixed(year: year, month: 12, day: 4),  kind: .usNovelty, country: .us),
+            h("Pretend to Be a Time Traveler Day", date: fixed(year: year, month: 12, day: 8),  kind: .usNovelty, country: .us),
+            h("National Cat Herders Day",          date: fixed(year: year, month: 12, day: 15), kind: .usNovelty, country: .us),
+            h("Crossword Puzzle Day",              date: fixed(year: year, month: 12, day: 21), kind: .usNovelty, country: .us),
+            h("Card Playing Day",                  date: fixed(year: year, month: 12, day: 28), kind: .usNovelty, country: .us),
+            h("National Bacon Day",                date: fixed(year: year, month: 12, day: 30), kind: .usNovelty, country: .us),
+            h("No Interruptions Day",              date: fixed(year: year, month: 12, day: 31), kind: .usNovelty, country: .us),
+        ]
+        // Floating: Bubble Wrap Appreciation Day — last Monday in January
+        result.append(h("Bubble Wrap Appreciation Day",    date: lastWeekday(2, month: 1, year: year),           kind: .usNovelty, country: .us))
+        // Floating: Administrative Professionals' Day — Wednesday of last full week of April
+        let lastAprFriday = lastWeekday(6, month: 4, year: year)
+        let adminDay = cal().date(byAdding: .day, value: -2, to: lastAprFriday)!
+        result.append(h("Administrative Professionals' Day", date: adminDay,                                     kind: .usNovelty, country: .us))
+        // Floating: National High Five Day — 3rd Thursday in April
+        result.append(h("National High Five Day",           date: nthWeekday(5, nth: 3, month: 4, year: year),  kind: .usNovelty, country: .us))
+        // Floating: No Pants Day — 1st Friday in May
+        result.append(h("No Pants Day",                     date: nthWeekday(6, nth: 1, month: 5, year: year),  kind: .usNovelty, country: .us))
+        // Floating: National Teacher's Day — 1st Tuesday in May
+        result.append(h("National Teacher's Day",           date: nthWeekday(3, nth: 1, month: 5, year: year),  kind: .usNovelty, country: .us))
+        // Floating: IT Professionals Day — 3rd Tuesday in September
+        result.append(h("IT Professionals Day",             date: nthWeekday(3, nth: 3, month: 9, year: year),  kind: .usNovelty, country: .us))
+        return result
     }
 
     // MARK: - United Kingdom (England & Wales)

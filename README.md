@@ -18,7 +18,7 @@
 
 <p align="center">
   <a href="https://github.com/BrianB-22/quickcal/releases/latest">
-    <img src="https://img.shields.io/badge/Download-v1.1-blue?style=for-the-badge&logo=apple" alt="Download v1.1" />
+    <img src="https://img.shields.io/badge/Download-v1.2-blue?style=for-the-badge&logo=apple" alt="Download v1.2" />
   </a>
 </p>
 
@@ -44,8 +44,15 @@ QuickCal puts all of that in your menu bar — no subscriptions, no accounts, no
 - Optional **ISO week numbers** in the left gutter
 - Configurable **week start** — Sunday or Monday
 
-### 🌍 International Holidays
-Holidays from **16 countries** displayed as colored dots directly on the calendar grid. Enable any combination in Settings — perfect for teams spread across multiple regions.
+### 🗓️ Holidays
+Colored dots on the calendar grid mark holidays and observances. All are optional and toggled independently in Settings.
+
+**US categories:**
+- 🔴 **US Federal Holidays** — all 11 federal holidays, computed for any year
+- 🟡 **US Observances** — Mother's Day, Father's Day, Valentine's Day, Halloween, and more
+- 🟣 **US Novelty Days** — 55+ fun days: Star Wars Day, Pi Day, Talk Like a Pirate Day, National Teacher's Day, Administrative Professionals' Day, and more
+
+**International** — national holidays from **16 countries**, enable any combination:
 
 | | | | |
 |---|---|---|---|
@@ -55,9 +62,11 @@ Holidays from **16 countries** displayed as colored dots directly on the calenda
 | 🇦🇺 Australia | 🇪🇸 Spain | 🇳🇱 Netherlands | 🇮🇳 India |
 
 **Dot colors:**
-- 🟠 **Orange** — National / Federal holiday
+- 🔴 **Red** — Federal / National holiday
+- 🟡 **Yellow** — US Observance
+- 🟣 **Purple** — US Novelty Day
 - 🟢 **Teal** — Regional or observance varies
-- ⭕ **Hollow ring** — Observed date (weekend shift to nearest weekday)
+- ⭕ **Hollow red ring** — Observed date (weekend shift), shows actual holiday date on hover
 
 Hover any dot to see the holiday name, country, and type.
 
@@ -110,11 +119,17 @@ is 2028 a leap year
 how many business days in July
 ```
 
-**Holidays:**
+**Holidays, observances & novelty days:**
 ```
 when is Thanksgiving 2027
 when is Bastille Day 2028
 is November 11 a holiday
+how many days until Halloween
+how many days until Father's Day
+when is Mother's Day 2027
+how many days until Valentine's Day
+how many days until Star Wars Day
+when is Talk Like a Pirate Day
 ```
 
 80+ city/timezone aliases supported (SF, NYC, DC, HK, etc.)
@@ -124,7 +139,10 @@ is November 11 a holiday
 |---|---|
 | Launch at Login | Off |
 | Global Hotkey | ⌥Space *(None / ⌥Space / Custom)* |
-| Show Holidays + per-country checkboxes | On (US only) |
+| US Federal Holidays | On |
+| US Observances | Off |
+| US Novelty Days | Off |
+| International holiday country checkboxes | Off |
 | Week Starts on Monday | Off |
 | Show Week Numbers | Off |
 | 24-Hour Time | Off |
@@ -147,7 +165,7 @@ Fixed-date, Easter-based, and floating weekday holidays are computed algorithmic
 
 ## Download
 
-**[⬇ Download QuickCal v1.1](https://github.com/BrianB-22/quickcal/releases/latest)**
+**[⬇ Download QuickCal v1.2](https://github.com/BrianB-22/quickcal/releases/latest)**
 
 - **DMG (recommended)** — open and drag QuickCal to your Applications folder
 - **ZIP** — unzip and move QuickCal to Applications
@@ -167,4 +185,4 @@ No external dependencies. No Swift packages to resolve.
 
 ## About
 
-Made by [Dejatech Solutions](https://dejatechsolutions.com) · QuickCal v1.1
+Made by [Dejatech Solutions](https://dejatechsolutions.com) · QuickCal v1.2

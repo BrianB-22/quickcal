@@ -97,9 +97,20 @@ struct CalendarView: View {
                     }
                     ForEach(Array(row.days.enumerated()), id: \.offset) { _, date in
                         let inMonth = isSameMonth(date)
-                        let dayHolidays = settings.showHolidays && inMonth
-                            ? HolidayData.holidays(for: date, countries: settings.enabledCountries)
-                            : []
+                        let dayHolidays: [Holiday] = {
+                            guard inMonth else { return [] }
+                            var h: [Holiday] = []
+                            if settings.showHolidays {
+                                h += HolidayData.holidays(for: date, countries: settings.enabledCountries)
+                            }
+                            if settings.showUSObservances {
+                                h += HolidayData.observances(for: date)
+                            }
+                            if settings.showUSNoveltyDays {
+                                h += HolidayData.noveltyDays(for: date)
+                            }
+                            return h
+                        }()
                         DayCell(
                             date: date,
                             isCurrentMonth: inMonth,
@@ -109,7 +120,7 @@ struct CalendarView: View {
                             isObserved: dayHolidays.contains(where: { $0.isObserved }),
                             onHover: { hovering in
                                 if hovering, let label = hoverLabel(for: dayHolidays) {
-                                    let color = dotColor(for: dayHolidays) ?? .orange
+                                    let color = dotColor(for: dayHolidays) ?? .red
                                     hoveredHoliday = (label, color)
                                 } else {
                                     hoveredHoliday = nil
@@ -233,17 +244,22 @@ struct CalendarView: View {
         }
     }
 
-    // Orange = national/federal; teal = regional/observance varies
+    // Red = national/federal; yellow = US observance; purple = US novelty; teal = regional/varies
     private func dotColor(for holidays: [Holiday]) -> Color? {
         guard !holidays.isEmpty else { return nil }
-        return holidays.contains(where: { $0.kind == .national }) ? .orange : .teal
+        if holidays.contains(where: { $0.kind == .national })     { return .red }
+        if holidays.contains(where: { $0.kind == .usObservance }) { return .yellow }
+        if holidays.contains(where: { $0.kind == .usNovelty })    { return .purple }
+        return .teal
     }
 
     private func hoverLabel(for holidays: [Holiday]) -> String? {
         guard !holidays.isEmpty else { return nil }
+        let fmt = DateFormatter()
+        fmt.dateFormat = "MMM d"
         return holidays.map { h in
             var parts = [h.country.flag, h.name]
-            if h.isObserved { parts.append("(Observed)") }
+            if h.isObserved { parts.append("(Observed \(fmt.string(from: h.date)))") }
             parts.append("·")
             parts.append(h.kind.label)
             return parts.joined(separator: "  ")
@@ -258,7 +274,7 @@ private struct DayCell: View {
     let isCurrentMonth: Bool
     let isToday: Bool
     let isSelected: Bool
-    let dotColor: Color?     // nil = no holiday; .orange = national; .teal = regional
+    let dotColor: Color?     // nil = no holiday; .red = national; .teal = regional
     let isObserved: Bool
     let onHover: (Bool) -> Void
 

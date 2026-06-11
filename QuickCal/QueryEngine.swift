@@ -304,6 +304,12 @@ enum QueryEngine {
         if let date = HolidayData.date(forHolidayNamed: tail, year: year) {
             return "\(tail.capitalized) \(year): \(friendlyDate(date))."
         }
+        if let date = HolidayData.date(forObservanceNamed: tail, year: year) {
+            return "\(tail.capitalized) \(year): \(friendlyDate(date))."
+        }
+        if let date = HolidayData.date(forNoveltyDayNamed: tail, year: year) {
+            return "\(tail.capitalized) \(year): \(friendlyDate(date))."
+        }
         return nil
     }
 
@@ -788,13 +794,15 @@ enum QueryEngine {
     private static func resolveNamedDateOrParse(_ text: String) -> Date? {
         let t = text.lowercased().trimmingCharacters(in: .whitespaces)
         let year = Calendar.current.component(.year, from: Date())
-        if let d = HolidayData.date(forHolidayNamed: t, year: year) { return d }
-        if t.contains("christmas")  { return HolidayData.date(forHolidayNamed: "christmas",  year: year) }
-        if t.contains("new year")   { return HolidayData.date(forHolidayNamed: "new year",   year: year) }
+        if let d = HolidayData.date(forHolidayNamed: t, year: year)    { return d }
+        if let d = HolidayData.date(forObservanceNamed: t, year: year) { return d }
+        if let d = HolidayData.date(forNoveltyDayNamed: t, year: year) { return d }
+        if t.contains("christmas")   { return HolidayData.date(forHolidayNamed: "christmas",   year: year) }
+        if t.contains("new year")    { return HolidayData.date(forHolidayNamed: "new year",    year: year) }
         if t.contains("thanksgiving"){ return HolidayData.date(forHolidayNamed: "thanksgiving", year: year) }
         if t.contains("independence"){ return HolidayData.date(forHolidayNamed: "independence", year: year) }
-        if t.contains("memorial")   { return HolidayData.date(forHolidayNamed: "memorial",   year: year) }
-        if t.contains("labor")      { return HolidayData.date(forHolidayNamed: "labor",      year: year) }
+        if t.contains("memorial")    { return HolidayData.date(forHolidayNamed: "memorial",    year: year) }
+        if t.contains("labor")       { return HolidayData.date(forHolidayNamed: "labor",       year: year) }
         return extractDate(from: t)
     }
 

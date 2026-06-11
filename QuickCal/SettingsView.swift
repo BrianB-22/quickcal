@@ -58,7 +58,13 @@ struct SettingsView: View {
 
                     if settings.showHolidays {
                         VStack(alignment: .leading, spacing: 0) {
-                            ForEach(HolidayCountry.allCases, id: \.self) { country in
+                            usFederalHolidaysRow
+                            usObservancesRow
+                            usNoveltyDaysRow
+                            Divider()
+                                .padding(.vertical, 4)
+                                .padding(.trailing, 30)
+                            ForEach(HolidayCountry.allCases.filter { $0 != .us }, id: \.self) { country in
                                 countryRow(country)
                             }
                         }
@@ -110,7 +116,7 @@ struct SettingsView: View {
 
             VStack(spacing: 3) {
                 HStack(spacing: 4) {
-                    Text("QuickCal v1.1")
+                    Text("QuickCal v1.2")
                         .font(.system(size: 11))
                         .foregroundStyle(.tertiary)
                     Text("·")
@@ -140,9 +146,11 @@ struct SettingsView: View {
         VStack(alignment: .leading, spacing: 5) {
             Divider().padding(.trailing, 30).padding(.bottom, 2)
 
-            legendRow(dot: filledDot(.orange),      label: "National / Federal holiday")
-            legendRow(dot: filledDot(.teal),         label: "Observance varies by region")
-            legendRow(dot: hollowDot(.orange),       label: "Observed date (weekend shift)")
+            legendRow(dot: filledDot(.red),     label: "Federal / National holiday")
+            legendRow(dot: filledDot(.yellow),  label: "US Observance")
+            legendRow(dot: filledDot(.purple),  label: "US Novelty Day")
+            legendRow(dot: filledDot(.teal),    label: "Observance varies by region")
+            legendRow(dot: hollowDot(.red),     label: "Observed date (weekend shift)")
         }
     }
 
@@ -165,6 +173,69 @@ struct SettingsView: View {
         Circle()
             .strokeBorder(color, lineWidth: 1.5)
             .frame(width: 8, height: 8)
+    }
+
+    // MARK: - US rows
+
+    private var usFederalHolidaysRow: some View {
+        let isOn = settings.enabledCountries.contains(.us)
+        return Button {
+            if isOn { settings.enabledCountries.remove(.us) }
+            else     { settings.enabledCountries.insert(.us) }
+        } label: {
+            HStack(spacing: 8) {
+                Image(systemName: isOn ? "checkmark.square.fill" : "square")
+                    .foregroundStyle(isOn ? AnyShapeStyle(.tint) : AnyShapeStyle(.secondary))
+                    .font(.system(size: 14))
+                Text("🇺🇸  US Federal Holidays")
+                    .font(.system(size: 13))
+                    .foregroundStyle(.primary)
+                Spacer()
+            }
+            .padding(.vertical, 4)
+            .contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
+    }
+
+    private var usObservancesRow: some View {
+        let isOn = settings.showUSObservances
+        return Button {
+            settings.showUSObservances.toggle()
+        } label: {
+            HStack(spacing: 8) {
+                Image(systemName: isOn ? "checkmark.square.fill" : "square")
+                    .foregroundStyle(isOn ? AnyShapeStyle(.tint) : AnyShapeStyle(.secondary))
+                    .font(.system(size: 14))
+                Text("🇺🇸  US Observances")
+                    .font(.system(size: 13))
+                    .foregroundStyle(.primary)
+                Spacer()
+            }
+            .padding(.vertical, 4)
+            .contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
+    }
+
+    private var usNoveltyDaysRow: some View {
+        let isOn = settings.showUSNoveltyDays
+        return Button {
+            settings.showUSNoveltyDays.toggle()
+        } label: {
+            HStack(spacing: 8) {
+                Image(systemName: isOn ? "checkmark.square.fill" : "square")
+                    .foregroundStyle(isOn ? AnyShapeStyle(.tint) : AnyShapeStyle(.secondary))
+                    .font(.system(size: 14))
+                Text("🇺🇸  US Novelty Days")
+                    .font(.system(size: 13))
+                    .foregroundStyle(.primary)
+                Spacer()
+            }
+            .padding(.vertical, 4)
+            .contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
     }
 
     // MARK: - Country row

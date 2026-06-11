@@ -17,6 +17,14 @@ final class SettingsStore: ObservableObject {
         didSet { UserDefaults.standard.set(showHolidays, forKey: "com.quickcal.showHolidays") }
     }
 
+    @Published var showUSObservances: Bool = false {
+        didSet { UserDefaults.standard.set(showUSObservances, forKey: "com.quickcal.showUSObservances") }
+    }
+
+    @Published var showUSNoveltyDays: Bool = false {
+        didSet { UserDefaults.standard.set(showUSNoveltyDays, forKey: "com.quickcal.showUSNoveltyDays") }
+    }
+
     @Published var launchAtLogin: Bool = false {
         didSet { applyLaunchAtLogin() }
     }
@@ -62,6 +70,12 @@ final class SettingsStore: ObservableObject {
         }
         if UserDefaults.standard.object(forKey: "com.quickcal.showHolidays") != nil {
             showHolidays = UserDefaults.standard.bool(forKey: "com.quickcal.showHolidays")
+        }
+        if UserDefaults.standard.object(forKey: "com.quickcal.showUSObservances") != nil {
+            showUSObservances = UserDefaults.standard.bool(forKey: "com.quickcal.showUSObservances")
+        }
+        if UserDefaults.standard.object(forKey: "com.quickcal.showUSNoveltyDays") != nil {
+            showUSNoveltyDays = UserDefaults.standard.bool(forKey: "com.quickcal.showUSNoveltyDays")
         }
         if let raw = UserDefaults.standard.string(forKey: "com.quickcal.hotkeyMode"),
            let mode = HotkeyMode(rawValue: raw) {
