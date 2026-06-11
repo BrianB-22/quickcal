@@ -18,7 +18,7 @@
 
 <p align="center">
   <a href="https://github.com/BrianB-22/quickcal/releases/latest">
-    <img src="https://img.shields.io/badge/Download-v1.2-blue?style=for-the-badge&logo=apple" alt="Download v1.2" />
+    <img src="https://img.shields.io/badge/Download-v1.3-blue?style=for-the-badge&logo=apple" alt="Download v1.3" />
   </a>
 </p>
 
@@ -165,7 +165,7 @@ Fixed-date, Easter-based, and floating weekday holidays are computed algorithmic
 
 ## Download
 
-**[⬇ Download QuickCal v1.2](https://github.com/BrianB-22/quickcal/releases/latest)**
+**[⬇ Download QuickCal v1.3](https://github.com/BrianB-22/quickcal/releases/latest)**
 
 - **DMG (recommended)** — open and drag QuickCal to your Applications folder
 - **ZIP** — unzip and move QuickCal to Applications
@@ -185,4 +185,4 @@ No external dependencies. No Swift packages to resolve.
 
 ## About
 
-Made by [Dejatech Solutions](https://dejatechsolutions.com) · QuickCal v1.2
+Made by [Dejatech Solutions](https://dejatechsolutions.com) · QuickCal v1.3

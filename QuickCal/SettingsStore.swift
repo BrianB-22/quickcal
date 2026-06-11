@@ -25,6 +25,9 @@ final class SettingsStore: ObservableObject {
         didSet { UserDefaults.standard.set(showUSNoveltyDays, forKey: "com.quickcal.showUSNoveltyDays") }
     }
 
+    @Published var availableVersion: String? = nil
+    @Published var updateURL: URL? = nil
+
     @Published var launchAtLogin: Bool = false {
         didSet { applyLaunchAtLogin() }
     }
@@ -104,6 +107,36 @@ final class SettingsStore: ObservableObject {
             if !parsed.isEmpty { enabledCountries = Set(parsed) }
         }
         launchAtLogin = SMAppService.mainApp.status == .enabled
+    }
+
+    func checkForUpdates() {
+        guard let url = URL(string: "https://api.github.com/repos/BrianB-22/quickcal/releases/latest") else { return }
+        URLSession.shared.dataTask(with: url) { [weak self] data, _, _ in
+            guard let self,
+                  let data,
+                  let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
+                  let tag = json["tag_name"] as? String,
+                  let htmlString = json["html_url"] as? String,
+                  let releaseURL = URL(string: htmlString) else { return }
+            let remote = tag.trimmingCharacters(in: CharacterSet(charactersIn: "v"))
+            let current = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "0"
+            guard self.isNewer(remote, than: current) else { return }
+            DispatchQueue.main.async {
+                self.availableVersion = remote
+                self.updateURL = releaseURL
+            }
+        }.resume()
+    }
+
+    private func isNewer(_ remote: String, than current: String) -> Bool {
+        let r = remote.split(separator: ".").compactMap { Int($0) }
+        let c = current.split(separator: ".").compactMap { Int($0) }
+        for i in 0..<max(r.count, c.count) {
+            let rv = i < r.count ? r[i] : 0
+            let cv = i < c.count ? c[i] : 0
+            if rv != cv { return rv > cv }
+        }
+        return false
     }
 
     private func applyLaunchAtLogin() {

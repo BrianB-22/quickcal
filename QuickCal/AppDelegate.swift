@@ -19,6 +19,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
         hotkeyManager.onActivate = { [weak self] in self?.togglePopoverFromHotkey() }
         applyGlobalHotkey()
+        settings.checkForUpdates()
         settings.$hotkeyMode
             .sink { [weak self] _ in self?.applyGlobalHotkey() }
             .store(in: &cancellables)

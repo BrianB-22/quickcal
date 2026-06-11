@@ -115,8 +115,14 @@ struct SettingsView: View {
             Divider()
 
             VStack(spacing: 3) {
+                if let version = settings.availableVersion, let url = settings.updateURL {
+                    Link("QuickCal v\(version) available — Download", destination: url)
+                        .font(.system(size: 11))
+                        .foregroundStyle(.tint)
+                        .padding(.bottom, 2)
+                }
                 HStack(spacing: 4) {
-                    Text("QuickCal v1.2")
+                    Text("QuickCal v1.3")
                         .font(.system(size: 11))
                         .foregroundStyle(.tertiary)
                     Text("·")
