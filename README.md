@@ -174,6 +174,8 @@ This build is signed and notarized by Apple — no security warnings, no excepti
 
 ## Building from Source
 
+> **Note:** The source code in this repository may include work-in-progress features, experimental code, or changes that are ahead of the latest release. The compiled binaries in [Releases](https://github.com/BrianB-22/quickcal/releases) are the stable, signed builds — the source and the releases may not always be in sync.
+
 1. Clone the repo
 2. Open `QuickCal.xcodeproj` in Xcode
 3. Select the **QuickCal** scheme
