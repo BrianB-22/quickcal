@@ -3,12 +3,14 @@ import SwiftUI
 import Combine
 import Carbon
 
-final class AppDelegate: NSObject, NSApplicationDelegate {
+final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate {
     private var statusItem: NSStatusItem!       // always square, anchors the popover
     private var clockStatusItem: NSStatusItem?  // appears only when a zone is pinned
     private var popover: NSPopover!
+    private var detachedWindow: NSWindow?
     let settings = SettingsStore()
     let tzStore = TimeZoneStore()
+    let calendarStore = CalendarStore()
     private let hotkeyManager = HotkeyManager()
     private var cancellables = Set<AnyCancellable>()
     private var clockTimer: Timer?
@@ -16,6 +18,12 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     func applicationDidFinishLaunching(_ notification: Notification) {
         setupMenuBarItem()
         setupPopover()
+
+        NotificationCenter.default.addObserver(
+            forName: .quickCalDetach, object: nil, queue: .main
+        ) { [weak self] _ in
+            self?.openDetachedWindow()
+        }
 
         hotkeyManager.onActivate = { [weak self] in self?.togglePopoverFromHotkey() }
         applyGlobalHotkey()
@@ -71,6 +79,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             rootView: ContentView()
                 .environmentObject(settings)
                 .environmentObject(tzStore)
+                .environmentObject(calendarStore)
         )
     }
 
@@ -124,6 +133,10 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     }
 
     private func togglePopoverFromHotkey() {
+        if closeDetachedWindowIfOpen(), let button = statusItem.button {
+            showPopover(from: button)
+            return
+        }
         if popover.isShown {
             popover.performClose(nil)
         } else {
@@ -138,6 +151,10 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         if event.type == .rightMouseUp { showContextMenu(); return }
         // Always anchor popover to the main icon item
         guard let button = statusItem.button else { return }
+        if closeDetachedWindowIfOpen() {
+            showPopover(from: button)
+            return
+        }
         if popover.isShown { popover.performClose(button) }
         else { showPopover(from: button) }
     }
@@ -148,9 +165,63 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
            popoverScreen != buttonScreen {
             popover.performClose(nil)
         }
+        calendarStore.resetToToday()
         popover.show(relativeTo: button.bounds, of: button, preferredEdge: .minY)
         popover.contentViewController?.view.window?.makeKey()
-        NotificationCenter.default.post(name: .quickCalDidOpen, object: nil)
+    }
+
+    // MARK: - Detached window
+
+    /// The menu bar icon should always be a reliable way back to QuickCal even
+    /// if the detached window got lost behind other windows, minimized, or
+    /// pushed to another Space. Closing it and reopening the anchored popover
+    /// instead loses nothing: it's the same CalendarStore/SettingsStore
+    /// underneath either way.
+    @discardableResult
+    private func closeDetachedWindowIfOpen() -> Bool {
+        guard let window = detachedWindow else { return false }
+        window.close()
+        return true
+    }
+
+    private func openDetachedWindow() {
+        popover.performClose(nil)
+
+        if let window = detachedWindow {
+            NSApp.activate(ignoringOtherApps: true)
+            window.makeKeyAndOrderFront(nil)
+            return
+        }
+
+        let window = NSWindow(
+            contentRect: NSRect(x: 0, y: 0, width: 620, height: 560),
+            styleMask: [.titled, .closable, .miniaturizable, .resizable],
+            backing: .buffered,
+            defer: false
+        )
+        window.title = "QuickCal"
+        window.isReleasedWhenClosed = false
+        window.delegate = self
+        window.contentViewController = NSHostingController(
+            rootView: ContentView(isDetached: true)
+                .environmentObject(settings)
+                .environmentObject(tzStore)
+                .environmentObject(calendarStore)
+        )
+        window.setFrameAutosaveName("QuickCalDetachedWindow")
+        if window.frame.origin == .zero {
+            // No autosaved position yet (first time detaching) — center it.
+            window.center()
+        }
+
+        detachedWindow = window
+        NSApp.activate(ignoringOtherApps: true)
+        window.makeKeyAndOrderFront(nil)
+    }
+
+    func windowWillClose(_ notification: Notification) {
+        guard notification.object as? NSWindow === detachedWindow else { return }
+        detachedWindow = nil
     }
 
     private func showContextMenu() {
@@ -181,5 +252,5 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 }
 
 extension Notification.Name {
-    static let quickCalDidOpen = Notification.Name("com.quickcal.didOpen")
+    static let quickCalDetach = Notification.Name("com.quickcal.detach")
 }

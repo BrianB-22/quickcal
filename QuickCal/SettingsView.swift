@@ -32,6 +32,10 @@ struct SettingsView: View {
                         row(icon: "power", title: "Launch at Login",
                             detail: "Open QuickCal automatically when you log in.")
                     }
+                    Toggle(isOn: $settings.checkForUpdatesEnabled) {
+                        row(icon: "arrow.down.circle", title: "Check for Updates",
+                            detail: "Check GitHub on launch and prompt to download when a newer version is available.")
+                    }
                     VStack(alignment: .leading, spacing: 8) {
                         row(icon: "keyboard.fill", title: "Global Hotkey",
                             detail: "Open QuickCal from any app without clicking the menu bar.")
@@ -90,6 +94,10 @@ struct SettingsView: View {
                         row(icon: "number", title: "Show Week Numbers",
                             detail: "Display ISO week numbers in the left gutter of the calendar.")
                     }
+                    Toggle(isOn: $settings.highlightCurrentWeek) {
+                        row(icon: "rectangle.grid.1x2", title: "Highlight Current Week",
+                            detail: "Tint the row containing today across the whole calendar grid.")
+                    }
                 }
 
                 Section("Clock") {
@@ -128,8 +136,8 @@ struct SettingsView: View {
                     Text("·")
                         .font(.system(size: 11))
                         .foregroundStyle(.tertiary)
-                    Link("dejatechsolutions.com",
-                         destination: URL(string: "https://dejatechsolutions.com")!)
+                    Link("bernacki.me",
+                         destination: URL(string: "https://bernacki.me")!)
                         .font(.system(size: 11))
                         .foregroundStyle(.tint)
                 }

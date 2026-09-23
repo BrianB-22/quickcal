@@ -41,7 +41,9 @@ QuickCal puts all of that in your menu bar — no subscriptions, no accounts, no
 ### 📅 Calendar
 - Full month calendar with **← →** arrow key navigation and **Space** to jump to today
 - Click any date to see its stats in the panel below
+- **Date range selection** — click a day to start, right-click a second day to set the end. The stats panel switches to show months, weeks, days, hours, business days, and weekend days spanned between them. Click any day to start a fresh selection.
 - Optional **ISO week numbers** in the left gutter
+- Optional **highlight the current week** with a subtle accent band across the row
 - Configurable **week start** — Sunday or Monday
 
 ### 🗓️ Holidays
@@ -85,6 +87,9 @@ Always-visible panel below the calendar grid:
 - **Rename** any zone — call it "Office" or "Client" instead of "London"
 - **Pin** any timezone to the menu bar — shows `🇬🇧 9:41 PM` next to the icon at a glance
 - Toggle between UTC offset (`UTC+2`) and offset from local time (`+6h`)
+
+### 🪟 Detachable Window
+Click the window icon in the header to pop QuickCal out of the menu bar popover into a regular, resizable window — handy for keeping it visible alongside other apps. Click the menu bar icon again to snap back to the popover.
 
 ### 💬 Natural Language Q&A
 Type a plain-English question. Everything is answered locally — no AI API, no network call.
@@ -145,8 +150,18 @@ when is Talk Like a Pirate Day
 | International holiday country checkboxes | Off |
 | Week Starts on Monday | Off |
 | Show Week Numbers | Off |
+| Highlight Current Week | Off |
 | 24-Hour Time | Off |
 | Show Offset from Local Time | On |
+| Check for Updates | On |
+
+---
+
+## Privacy & Connectivity
+
+QuickCal does not require an internet connection to function — the calendar, world clock, holiday data, and Q&A engine all run entirely locally.
+
+The one exception: on launch, QuickCal makes a single request to GitHub's public releases API to check whether a newer version is available, and prompts you to download it if so. No personal data is sent or collected. This check can be turned off at any time in **Settings → Check for Updates**.
 
 ---
 
@@ -187,4 +202,6 @@ No external dependencies. No Swift packages to resolve.
 
 ## About
 
-Made by [Dejatech Solutions](https://dejatechsolutions.com) · QuickCal v1.3
+Made by [bernacki.me](https://bernacki.me) · QuickCal v1.3
+
+This software is provided "as is", without warranty of any kind, express or implied. Use at your own risk.

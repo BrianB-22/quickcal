@@ -103,6 +103,9 @@ struct CalendarStatsView: View {
     private var monthAbbrev: String {
         let f = DateFormatter(); f.dateFormat = "MMM"; return f.string(from: date)
     }
+    private var monthFullName: String {
+        let f = DateFormatter(); f.dateFormat = "MMMM"; return f.string(from: date)
+    }
     private var bizDaysLeft: Int {
         let month = cal.component(.month, from: date)
         let monthStart = cal.date(from: DateComponents(year: year, month: month, day: 1))!
@@ -124,83 +127,178 @@ struct CalendarStatsView: View {
     }
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 8) {
+        VStack(alignment: .center, spacing: 10) {
 
             // "Selected date" chip — only when not today
             if !isToday {
-                HStack(spacing: 4) {
+                HStack(spacing: 5) {
                     Image(systemName: "calendar")
-                        .font(.system(size: 9))
+                        .font(.system(size: 11))
                         .foregroundStyle(.tertiary)
                     Text(dateLabelText)
-                        .font(.system(size: 10))
+                        .font(.system(size: 12))
                         .foregroundStyle(.tertiary)
                 }
             }
 
             // Moon phase + Season
-            HStack(alignment: .center) {
-                HStack(spacing: 5) {
-                    Image(systemName: moonSymbol)
-                        .font(.system(size: 15))
-                        .foregroundStyle(.secondary)
-                    Text(moonName)
-                        .font(.system(size: 11))
-                        .foregroundStyle(.secondary)
-                }
-                Spacer()
+            HStack(spacing: 6) {
+                Image(systemName: moonSymbol)
+                    .font(.system(size: 18))
+                    .foregroundStyle(.secondary)
+                Text(moonName)
+                    .font(.system(size: 13))
+                    .foregroundStyle(.secondary)
+                Text("·")
+                    .font(.system(size: 13))
+                    .foregroundStyle(Color.secondary.opacity(0.3))
                 Text("\(season.emoji) \(season.name)  ·  Day \(season.day) of \(season.total)")
-                    .font(.system(size: 11))
+                    .font(.system(size: 13))
                     .foregroundStyle(.secondary)
             }
 
             // Year progress bar
-            HStack(spacing: 6) {
+            HStack(spacing: 8) {
                 Text(String(year))
-                    .font(.system(size: 10, design: .monospaced))
+                    .font(.system(size: 12, design: .monospaced))
                     .foregroundStyle(.tertiary)
-                    .frame(width: 34, alignment: .leading)
+                    .frame(width: 38, alignment: .leading)
 
                 GeometryReader { geo in
                     ZStack(alignment: .leading) {
-                        RoundedRectangle(cornerRadius: 2)
+                        RoundedRectangle(cornerRadius: 3)
                             .fill(Color.secondary.opacity(0.15))
-                        RoundedRectangle(cornerRadius: 2)
+                        RoundedRectangle(cornerRadius: 3)
                             .fill(Color.accentColor.opacity(0.5))
                             .frame(width: max(4, geo.size.width * yearPct))
                     }
                 }
-                .frame(height: 4)
+                .frame(height: 6)
 
                 Text("\(Int(yearPct * 100))%")
-                    .font(.system(size: 10, design: .monospaced))
+                    .font(.system(size: 12, design: .monospaced))
                     .foregroundStyle(.tertiary)
-                    .frame(width: 32, alignment: .trailing)
+                    .frame(width: 36, alignment: .trailing)
             }
 
             // Day stats strip
             HStack(spacing: 0) {
                 chip("Day \(dayOfYear)")
                 sep
-                chip("Mo \(cal.component(.month, from: date))")
+                chip(monthFullName)
                 sep
-                chip("Wk \(weekNum)")
-                sep
+                chip("Week \(weekNum)")
+            }
+            .lineLimit(1)
+
+            HStack(spacing: 0) {
                 chip("\(daysLeft) days left in \(year)")
                 sep
                 chip("\(bizDaysLeft) biz days in \(monthAbbrev)")
             }
             .lineLimit(1)
-            .minimumScaleFactor(0.75)
         }
-        .padding(.vertical, 10)
+        .frame(maxWidth: .infinity)
+        .padding(.vertical, 14)
     }
 
     private func chip(_ text: String) -> some View {
-        Text(text).font(.system(size: 10)).foregroundStyle(.tertiary)
+        Text(text).font(.system(size: 13)).foregroundStyle(.tertiary)
     }
 
     private var sep: some View {
-        Text("  ·  ").font(.system(size: 10)).foregroundStyle(Color.secondary.opacity(0.3))
+        Text("  ·  ").font(.system(size: 13)).foregroundStyle(Color.secondary.opacity(0.3))
+    }
+}
+
+// MARK: - RangeStatsView
+
+/// Shown in place of CalendarStatsView while a two-point range is selected
+/// (left-click sets the start, right-click sets the end).
+struct RangeStatsView: View {
+    let start: Date
+    let end: Date
+    private let cal = Calendar(identifier: .gregorian)
+
+    private var ordered: (Date, Date) {
+        start <= end ? (start, end) : (end, start)
+    }
+
+    // Inclusive of both endpoints — matches "business days between" elsewhere in the app.
+    private var totalDays: Int {
+        let (s, e) = ordered
+        let diff = cal.dateComponents([.day], from: cal.startOfDay(for: s), to: cal.startOfDay(for: e)).day ?? 0
+        return diff + 1
+    }
+
+    private var businessDays: Int {
+        let (s, e) = ordered
+        var count = 0
+        var cursor = cal.startOfDay(for: s)
+        let endDay = cal.startOfDay(for: e)
+        while cursor <= endDay {
+            let wd = cal.component(.weekday, from: cursor)
+            if wd != 1 && wd != 7 { count += 1 }
+            cursor = cal.date(byAdding: .day, value: 1, to: cursor)!
+        }
+        return count
+    }
+
+    private var weekendDays: Int { totalDays - businessDays }
+
+    private var totalHours: Int { totalDays * 24 }
+    private var totalWeeks: Int { totalDays / 7 }
+    private var totalMonths: Int {
+        let (s, e) = ordered
+        return cal.dateComponents([.month], from: cal.startOfDay(for: s), to: cal.startOfDay(for: e)).month ?? 0
+    }
+
+    private var rangeLabel: String {
+        let f = DateFormatter(); f.dateFormat = "MMM d, yyyy"
+        let (s, e) = ordered
+        return "\(f.string(from: s))  →  \(f.string(from: e))"
+    }
+
+    var body: some View {
+        VStack(spacing: 10) {
+            HStack(spacing: 5) {
+                Image(systemName: "arrow.left.and.right")
+                    .font(.system(size: 11))
+                    .foregroundStyle(.tertiary)
+                Text(rangeLabel)
+                    .font(.system(size: 12))
+                    .foregroundStyle(.tertiary)
+            }
+
+            statsRow([(totalMonths, "month"), (totalWeeks, "week")])
+            statsRow([(totalDays, "day"), (totalHours, "hour")])
+            statsRow([(businessDays, "business day"), (weekendDays, "weekend day")])
+        }
+        .frame(maxWidth: .infinity)
+        .padding(.vertical, 14)
+    }
+
+    // Omits any zero-value entries — e.g. a 4-day range shows "4 days · 96 hours"
+    // with no "0 months · 0 weeks" row at all.
+    @ViewBuilder
+    private func statsRow(_ items: [(Int, String)]) -> some View {
+        let nonZero = items.filter { $0.0 != 0 }
+        if !nonZero.isEmpty {
+            HStack(spacing: 0) {
+                ForEach(Array(nonZero.enumerated()), id: \.offset) { index, item in
+                    chip("\(item.0) \(item.1)\(item.0 == 1 ? "" : "s")")
+                    if index < nonZero.count - 1 { sep }
+                }
+            }
+            .lineLimit(1)
+        }
+    }
+
+    private func chip(_ text: String) -> some View {
+        Text(text).font(.system(size: 13)).foregroundStyle(.tertiary)
+    }
+
+    private var sep: some View {
+        Text("  ·  ").font(.system(size: 13)).foregroundStyle(Color.secondary.opacity(0.3))
     }
 }

@@ -3,9 +3,9 @@ import SwiftUI
 struct ContentView: View {
     @EnvironmentObject var settings: SettingsStore
     @EnvironmentObject var tzStore: TimeZoneStore
-    @State private var displayedMonth: Date = Calendar.current.startOfMonth(for: Date())
-    @State private var selectedDate: Date? = nil
+    @EnvironmentObject var calendarStore: CalendarStore
     @State private var showSettings = false
+    var isDetached: Bool = false
 
     var body: some View {
         VStack(spacing: 0) {
@@ -14,7 +14,7 @@ struct ContentView: View {
 
             HStack(alignment: .top, spacing: 0) {
                 // Left: Calendar
-                CalendarView(displayedMonth: $displayedMonth, selectedDate: $selectedDate)
+                CalendarView(displayedMonth: $calendarStore.displayedMonth, selectedDate: $calendarStore.selectedDate, rangeEnd: $calendarStore.rangeEnd)
                     .frame(width: 360)
                     .environmentObject(settings)
 
@@ -32,12 +32,11 @@ struct ContentView: View {
             QueryView().environmentObject(settings)
 
         }
-        .frame(width: 620, height: 560)
+        .frame(
+            minWidth: isDetached ? 560 : 620, idealWidth: 620, maxWidth: isDetached ? .infinity : 620,
+            minHeight: isDetached ? 480 : 560, idealHeight: 560, maxHeight: isDetached ? .infinity : 560
+        )
         .background(Color(NSColor.windowBackgroundColor))
-        .onReceive(NotificationCenter.default.publisher(for: Notification.Name("com.quickcal.didOpen"))) { _ in
-            displayedMonth = Calendar.current.startOfMonth(for: Date())
-            selectedDate   = nil
-        }
         .sheet(isPresented: $showSettings) {
             SettingsView().environmentObject(settings)
         }
@@ -56,9 +55,7 @@ struct ContentView: View {
 
             // Today shortcut
             Button("Today") {
-                let today = Calendar.current.startOfMonth(for: Date())
-                displayedMonth = today
-                selectedDate = Calendar.current.startOfDay(for: Date())
+                calendarStore.resetToToday()
             }
             .buttonStyle(.plain)
             .font(.system(size: 11))
@@ -91,6 +88,18 @@ struct ContentView: View {
             .toggleStyle(.button)
             .controlSize(.small)
             .help("Toggle UTC offset vs offset from local time")
+
+            if !isDetached {
+                Button {
+                    NotificationCenter.default.post(name: .quickCalDetach, object: nil)
+                } label: {
+                    Image(systemName: "macwindow")
+                        .font(.system(size: 13))
+                        .foregroundStyle(.secondary)
+                }
+                .buttonStyle(.plain)
+                .help("Open in a Window")
+            }
 
             Button { showSettings = true } label: {
                 Image(systemName: "gear")

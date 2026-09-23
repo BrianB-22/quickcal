@@ -21,6 +21,7 @@
 		BB100012 /* HotkeyManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA100012 /* HotkeyManager.swift */; };
 		BB100014 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = AA100014 /* Assets.xcassets */; };
 		BB100015 /* CalendarStatsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA100015 /* CalendarStatsView.swift */; };
+		BB100016 /* CalendarStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA100016 /* CalendarStore.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -39,6 +40,7 @@
 		AA100013 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		AA100014 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		AA100015 /* CalendarStatsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalendarStatsView.swift; sourceTree = "<group>"; };
+		AA100016 /* CalendarStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalendarStore.swift; sourceTree = "<group>"; };
 		CC100005 /* QuickCal.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = QuickCal.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -77,6 +79,7 @@
 				AA100011 /* QueryEngine.swift */,
 				AA100012 /* HotkeyManager.swift */,
 				AA100015 /* CalendarStatsView.swift */,
+				AA100016 /* CalendarStore.swift */,
 				AA100014 /* Assets.xcassets */,
 				AA100013 /* Info.plist */,
 			);
@@ -173,6 +176,7 @@
 				BB100011 /* QueryEngine.swift in Sources */,
 				BB100012 /* HotkeyManager.swift in Sources */,
 				BB100015 /* CalendarStatsView.swift in Sources */,
+				BB100016 /* CalendarStore.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

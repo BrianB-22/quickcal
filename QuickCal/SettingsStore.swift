@@ -1,5 +1,6 @@
 import Foundation
 import SwiftUI
+import AppKit
 import ServiceManagement
 
 enum HotkeyMode: String {
@@ -28,6 +29,10 @@ final class SettingsStore: ObservableObject {
     @Published var availableVersion: String? = nil
     @Published var updateURL: URL? = nil
 
+    @Published var checkForUpdatesEnabled: Bool = true {
+        didSet { UserDefaults.standard.set(checkForUpdatesEnabled, forKey: "com.quickcal.checkForUpdatesEnabled") }
+    }
+
     @Published var launchAtLogin: Bool = false {
         didSet { applyLaunchAtLogin() }
     }
@@ -50,6 +55,10 @@ final class SettingsStore: ObservableObject {
 
     @Published var showWeekNumbers: Bool = false {
         didSet { UserDefaults.standard.set(showWeekNumbers, forKey: "com.quickcal.showWeekNumbers") }
+    }
+
+    @Published var highlightCurrentWeek: Bool = false {
+        didSet { UserDefaults.standard.set(highlightCurrentWeek, forKey: "com.quickcal.highlightCurrentWeek") }
     }
 
     @Published var showLocalOffset: Bool = true {
@@ -96,11 +105,17 @@ final class SettingsStore: ObservableObject {
         if UserDefaults.standard.object(forKey: "com.quickcal.showWeekNumbers") != nil {
             showWeekNumbers = UserDefaults.standard.bool(forKey: "com.quickcal.showWeekNumbers")
         }
+        if UserDefaults.standard.object(forKey: "com.quickcal.highlightCurrentWeek") != nil {
+            highlightCurrentWeek = UserDefaults.standard.bool(forKey: "com.quickcal.highlightCurrentWeek")
+        }
         if UserDefaults.standard.object(forKey: "com.quickcal.showLocalOffset") != nil {
             showLocalOffset = UserDefaults.standard.bool(forKey: "com.quickcal.showLocalOffset")
         }
         if UserDefaults.standard.object(forKey: "com.quickcal.rotatingPlaceholder") != nil {
             showRotatingPlaceholder = UserDefaults.standard.bool(forKey: "com.quickcal.rotatingPlaceholder")
+        }
+        if UserDefaults.standard.object(forKey: "com.quickcal.checkForUpdatesEnabled") != nil {
+            checkForUpdatesEnabled = UserDefaults.standard.bool(forKey: "com.quickcal.checkForUpdatesEnabled")
         }
         if let raw = UserDefaults.standard.string(forKey: "com.quickcal.enabledCountries") {
             let parsed = raw.split(separator: ",").compactMap { HolidayCountry(rawValue: String($0)) }
@@ -110,6 +125,7 @@ final class SettingsStore: ObservableObject {
     }
 
     func checkForUpdates() {
+        guard checkForUpdatesEnabled else { return }
         guard let url = URL(string: "https://api.github.com/repos/BrianB-22/quickcal/releases/latest") else { return }
         URLSession.shared.dataTask(with: url) { [weak self] data, _, _ in
             guard let self,
@@ -124,8 +140,25 @@ final class SettingsStore: ObservableObject {
             DispatchQueue.main.async {
                 self.availableVersion = remote
                 self.updateURL = releaseURL
+                Self.promptToDownload(version: remote, url: releaseURL)
             }
         }.resume()
+    }
+
+    /// An accessory (menu-bar-only) app isn't guaranteed to be frontmost just
+    /// because a background network check completed — without activating,
+    /// the alert can appear behind other windows or fail to take focus.
+    private static func promptToDownload(version: String, url: URL) {
+        NSApp.activate(ignoringOtherApps: true)
+        let alert = NSAlert()
+        alert.messageText = "A New Version is Available"
+        alert.informativeText = "QuickCal \(version) is available. Would you like to download it?"
+        alert.alertStyle = .informational
+        alert.addButton(withTitle: "Download")
+        alert.addButton(withTitle: "Not Now")
+        if alert.runModal() == .alertFirstButtonReturn {
+            NSWorkspace.shared.open(url)
+        }
     }
 
     private func isNewer(_ remote: String, than current: String) -> Bool {

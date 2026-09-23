@@ -2,8 +2,6 @@
 
 ## Calendar
 
-- [ ] **Fill calendar grid edges** — show trailing days from the previous month before the 1st, and leading days from the next month after the last day, so the grid is always full with no blank cells. Tapping those dates should navigate to that month.
-- [ ] **Date range selection** — shift-click to select a range; show day count in the stats area
 - [ ] **Mini month preview** — small prev/next month thumbnails on hover of the nav arrows
 
 ## Calendar Stats Panel
@@ -20,7 +18,6 @@
 ## Q&A Engine
 
 - [ ] **Smarter fallback** — when query almost matches, suggest closest pattern
-- [ ] **Time conversion** — "convert 3pm EST to London time"
 
 ## System Integration
 
@@ -28,20 +25,16 @@
 
 ## UX Polish
 
-- [ ] **Keyboard navigation** — arrow keys move the selected day on the calendar
+- [ ] **Keyboard navigation** — arrow keys move the selected day on the calendar (currently only shifts the month; space still jumps to today)
 - [ ] **Copy date on click** — clicking an already-selected date copies it to clipboard (MM/DD/YYYY, long form, or ISO 8601 — configurable)
-- [ ] **Custom hotkey** — let user change the global hotkey from ⌥Space in Settings
 - [ ] **Compact mode** — smaller popover option (calendar only, no clock panel)
+- [ ] **Detach → return affordance** — no way to re-attach the detached window back into the popover other than clicking the menu bar icon (which just closes it)
 
 ---
 
 ## Future Polish
 
 - [ ] **Light mode text contrast** — secondary and tertiary text (city labels, dates, stats strip, offset labels) may be too light in light mode; review and darken where needed for readability
-
-## Before Release
-
-- [ ] **App icon** — 1024×1024 PNG master + all required sizes in AppIcon.appiconset; needs to look good at 16pt (menu bar) and 512pt (App Store)
 
 ## Future Maintenance
 
@@ -55,6 +48,10 @@
 - [x] Month calendar with navigation, Today button
 - [x] Week starts on Monday option
 - [x] ISO week numbers in left gutter
+- [x] Highlight current week — subtle accent band across today's row (Settings toggle, off by default)
+- [x] Fill calendar grid edges with adjacent month dates; tapping one navigates to that month
+- [x] Calendar always resets to today (month + selection) whenever the popover/window opens
+- [x] Date range selection — left-click sets start, right-click sets end; stats panel shows days/business days/weekend days between them; clicking any day resets to a fresh single selection
 - [x] Holiday dots — orange (national), teal (regional), hollow ring (observed weekend shift)
 - [x] Multi-country holidays — 16 countries: US, India, UK, Canada, Australia, France, Germany, Italy, Japan, Brazil, Mexico, Netherlands, Poland, Singapore, South Korea, Spain
 - [x] Holiday dot legend + accuracy note in Settings
@@ -82,6 +79,7 @@
 ### Q&A Engine
 - [x] Contraction normalization (what's, when's, it's, etc.)
 - [x] Time in place — "time in SF", "tokyo time", "what time in London"
+- [x] Time conversion — "convert 3pm EST to London time", "what is 9am Tokyo in New York"
 - [x] Relative dates — next Friday, last Monday, in 3 days, in 2 weeks, this Thursday
 - [x] Business day math — +N business days from date
 - [x] Days/weeks until, days since, days between
@@ -103,8 +101,11 @@
 - [x] UTC/Local offset toggle in header + Settings
 - [x] Show holidays toggle with per-country checkboxes
 - [x] Week starts on Monday, show week numbers
-- [x] Launch at login, global hotkey (⌥Space)
-- [x] Settings footer — version, dejatechsolutions.com, copyright
+- [x] Launch at login, global hotkey — None/⌥Space/Custom picker with live key recorder
+- [x] App icon — all required macOS sizes (16pt–1024pt)
+- [x] Update check on launch — GitHub releases API; alert prompts to download if newer
+- [x] Detach button — pop the calendar out of the menu bar popover into a resizable window
+- [x] Settings footer — version, bernacki.me, copyright
 - [x] Right-click menu bar icon → About QuickCal (with GitHub + website links), Quit
 - [x] GitHub repo: github.com/BrianB-22/quickcal
 - [x] .gitignore — excludes Xcode state, DerivedData, .DS_Store, .claude/
