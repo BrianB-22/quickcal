@@ -26,5 +26,6 @@ build/
 # Claude
 .claude/
 
-# Compiled app bundles in Builds (keep DMGs and ZIPs, not raw .app)
-Builds/*.app
+# Compiled app bundles in builds/ (keep DMGs and ZIPs, not raw .app)
+builds/*.app
+builds/**/*.app
